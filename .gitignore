@@ -1,0 +1,51 @@
+# Dependencies
+node_modules/
+backend/.venv/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.Python
+
+# Environment & secrets — never commit
+.env
+.env.*
+!.env.example
+backend/.env
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+backend/intellifra.db
+
+# Large generated training data (regenerate locally)
+backend/data/fra_dataset.csv
+*.csv.bak
+
+# Build / cache
+dist/
+build/
+.vite/
+.cache/
+*.log
+.DS_Store
+Thumbs.db
+
+# Editor / agent tooling (do not publish as project code)
+.cursor/
+.claude/
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Python / ML misc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.pth.bak

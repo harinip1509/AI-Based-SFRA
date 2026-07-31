@@ -1,0 +1,13 @@
+{
+  "labels": [
+    "Normal",
+    "Minor Deviation",
+    "Moderate Fault",
+    "High Fault Risk"
+  ],
+  "mean": 5.691773891448975,
+  "std": 4.625913189483643,
+  "ae_threshold": 0.02253034152090548,
+  "cnn_val_accuracy": 0.9441,
+  "ae_val_accuracy": 0.9847
+}
