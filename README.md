@@ -26,6 +26,7 @@
 - [Installation & setup](#installation--setup)
 - [Usage](#usage)
 - [Model details](#model-details)
+- [Mathematical formulation](#mathematical-formulation)
 - [Dataset](#dataset)
 - [Project structure](#project-structure)
 - [Roadmap](#roadmap)
@@ -259,53 +260,146 @@ curl -X POST http://127.0.0.1:8000/fra/upload \
 
 ## Model details
 
-IntelliFRA uses a **hybrid** inference stack:
+IntelliFRA uses a **hybrid** stack: a supervised 1D CNN for severity classification, an unsupervised autoencoder for anomaly scoring, a shape-aware post-processor, and a rule/FFT fallback when PyTorch weights are unavailable.
 
-| Component | Role |
-|-----------|------|
-| **FRA1DCNN** | Multi-class severity (4-way softmax) on the normalized magnitude series |
-| **FRAAutoencoder** | Reconstruction MSE → anomaly score vs threshold in `ml_meta.json` |
-| **Shape override** | Uses smoothness / monotonicity / peak cues to temper over-severe labels on healthy-looking shapes |
-| **Rule + FFT fallback** | `analyze_fra()` in `fra_model.py` when weights fail to load |
+### Models used
 
-**CNN (summary):** Conv1d 1→16 (k=7) → pool → 16→32 (k=5) → pool → 32→64 (k=3) → AdaptiveAvgPool → Linear → Dropout → 4 classes.
+| Model / module | File | Purpose |
+|----------------|------|---------|
+| **FRA1DCNN** | `backend/services/ml_model.py` · `cnn_model.pth` | 4-class severity: Normal, Minor Deviation, Moderate Fault, High Fault Risk |
+| **FRAAutoencoder** | `backend/services/ml_model.py` · `autoencoder.pth` | Reconstructs the curve; high MSE → anomaly |
+| **AE threshold** | `backend/models/ml_meta.json` | Validation-calibrated reconstruction threshold \(\tau\) |
+| **Shape override** | `ml_model.py` (post-inference) | Tempers false High Fault on smooth / monotonic healthy shapes |
+| **Rule + FFT fallback** | `backend/services/fra_model.py` (`analyze_fra`) | Deterministic path if ML load/inference fails (`model_source: rule_fallback`) |
 
-**Autoencoder (summary):** Encoder 500→256→96→32 · Decoder 32→96→256→500.
+### FRA1DCNN architecture
 
-**Training (default):** Adam `1e-3`, batch 32, 20 epochs, CrossEntropy + MSE; 80/20 split.
+Input shape: `(batch, 1, 500)` after per-sample z-score normalization.
 
-**Latest synthetic validation (50k train set):** CNN accuracy ≈ **0.94** · AE Normal-vs-Fault accuracy ≈ **0.98**. Full tables: [`model_accuracy.txt`](model_accuracy.txt) and `backend/models/training_metrics.json`.
+| Stage | Layer | Details |
+|-------|--------|---------|
+| Features | Conv1d | `1 → 16`, kernel 7, padding 3 + ReLU |
+| | MaxPool1d | pool size 2 |
+| | Conv1d | `16 → 32`, kernel 5, padding 2 + ReLU |
+| | MaxPool1d | pool size 2 |
+| | Conv1d | `32 → 64`, kernel 3, padding 1 + ReLU |
+| | AdaptiveAvgPool1d | output length 16 → feature map `64 × 16` |
+| Head | Flatten | |
+| | Linear | `1024 → 128` + ReLU |
+| | Dropout | \(p = 0.2\) |
+| | Linear | `128 → 4` logits → **Softmax** at inference |
 
-<details>
-<summary>Mathematical formulation (paper-ready)</summary>
+### FRAAutoencoder architecture
 
-Input magnitude series \(x = (x_1,\ldots,x_N)\), \(N = 500\), \(\epsilon = 10^{-6}\).
+Input / output length: **500** (flattened magnitude series).
 
-**Per-sample z-score**
+| Part | Layers |
+|------|--------|
+| **Encoder** | Linear `500 → 256` + ReLU → `256 → 96` + ReLU → `96 → 32` (latent) |
+| **Decoder** | Linear `32 → 96` + ReLU → `96 → 256` + ReLU → `256 → 500` (reconstruction) |
+
+### Training configuration
+
+| Hyperparameter | Value |
+|----------------|--------|
+| Optimizer | Adam, learning rate \(1 \times 10^{-3}\) |
+| Batch size | 32 |
+| Epochs | 20 |
+| CNN loss | Cross-entropy |
+| AE loss | Mean squared error (MSE) reconstruction |
+| Split | 80% train / 20% validation (seed 42) |
+| Script | `backend/services/train_models.py` |
+
+### Latest validation (50k synthetic set)
+
+| Model | Metric | Score |
+|-------|--------|------:|
+| 1D CNN | Accuracy | **0.9441** |
+| 1D CNN | Macro F1 | **0.9443** |
+| Autoencoder | Normal vs Fault accuracy | **0.9847** |
+| Autoencoder | Fault recall | **1.0000** |
+| Autoencoder | Threshold \(\tau\) | **0.022530** |
+
+Full per-class tables and confusion matrices: [`model_accuracy.txt`](model_accuracy.txt) · `backend/models/training_metrics.json`.
+
+---
+
+## Mathematical formulation
+
+Notation: magnitude series \(\mathbf{x} = (x_1,\ldots,x_N)\), \(N = 500\), small constant \(\epsilon = 10^{-6}\).
+
+### 1. Per-sample z-score normalization
+
+Applied identically in training and inference:
 
 \[
-\mu = \frac{1}{N}\sum_i x_i,\quad
-\sigma = \sqrt{\frac{1}{N}\sum_i (x_i-\mu)^2},\quad
-x_i' = \frac{x_i-\mu}{\sigma+\epsilon}
+\mu = \frac{1}{N}\sum_{i=1}^{N} x_i, \qquad
+\sigma = \sqrt{\frac{1}{N}\sum_{i=1}^{N}(x_i - \mu)^2}, \qquad
+x_i' = \frac{x_i - \mu}{\sigma + \epsilon}
 \]
 
-**CNN**
+### 2. CNN classification
 
 \[
-\hat{\mathbf{p}} = \mathrm{softmax}(f_{\mathrm{CNN}}(\mathbf{x}')),\quad
-\hat{y} = \arg\max_k \hat{p}_k
+\hat{\mathbf{p}} = \mathrm{softmax}\big(f_{\mathrm{CNN}}(\mathbf{x}')\big), \qquad
+\hat{y} = \arg\max_{k \in \{1,\ldots,4\}} \hat{p}_k
 \]
 
-**Autoencoder anomaly**
+Training objective (cross-entropy):
 
 \[
-e = \frac{1}{N}\sum_i (x_i'-\hat{x}_i')^2,\quad
-s_{\mathrm{anom}} = \frac{e}{\tau+\epsilon}
+\mathcal{L}_{\mathrm{CE}} = -\sum_{k=1}^{4} y_k \log \hat{p}_k
 \]
 
-where \(\tau\) is the validation threshold in `ml_meta.json`.
+Confidence reported to the UI is typically \(\max_k \hat{p}_k\).
 
-</details>
+### 3. Autoencoder reconstruction & anomaly score
+
+\[
+\hat{\mathbf{x}}' = f_{\mathrm{AE}}(\mathbf{x}'), \qquad
+e = \frac{1}{N}\sum_{i=1}^{N}(x_i' - \hat{x}_i')^2, \qquad
+s_{\mathrm{anom}} = \frac{e}{\tau + \epsilon}
+\]
+
+where \(\tau\) is the validation threshold stored in `ml_meta.json`. Samples with \(e > \tau\) are treated as anomalous (fault-side) in the AE binary evaluation.
+
+AE training objective:
+
+\[
+\mathcal{L}_{\mathrm{MSE}} = \frac{1}{N}\sum_{i=1}^{N}(x_i' - \hat{x}_i')^2
+\]
+
+### 4. Rule-based / FFT explainability features
+
+From `fra_model.py` on the raw (or cleaned) magnitude series:
+
+\[
+E_t = \sum_{i=1}^{N} x_i^2, \qquad
+E_s = \sum_{k=0}^{N/2-1}\big|\mathcal{F}(\mathbf{x})_k\big|
+\]
+
+plus mean, std, peak-to-peak, and zero-crossings. Binary flags (std / range / energy / spectral) drive the deterministic severity heuristic when ML is unavailable.
+
+### 5. Shape-override features (post-ML)
+
+\[
+\Delta x_i = x_{i+1} - x_i
+\]
+
+- **Smoothness:** \(\mathrm{std}(\Delta \mathbf{x})\)
+- **Monotonic ratio:** fraction of \(\Delta x_i < 0\) (roll-off-like healthy curves)
+- **Peak count:** local maxima along the series
+
+These cues can downgrade an over-severe CNN label on smooth, largely monotonic responses.
+
+### 6. Evaluation metrics
+
+\[
+\mathrm{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN}, \qquad
+P = \frac{TP}{TP + FP}, \qquad
+R = \frac{TP}{TP + FN}, \qquad
+F_1 = \frac{2PR}{P + R}
+\]
 
 ---
 
@@ -380,7 +474,7 @@ Bug reports and dataset pointers (public SFRA sources) are especially helpful.
 
 ## License
 
-Released under the [MIT License](LICENSE) (add a `LICENSE` file at repo root if not already present).
+Released under the [MIT License](LICENSE).
 
 ---
 
