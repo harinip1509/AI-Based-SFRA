@@ -188,47 +188,34 @@ def analyze_fra_ml(series: List[float], pre_normalized: bool = False) -> Dict[st
     is_monotonic = monotonic_ratio > 0.85
     low_peaks = peaks <= 2
 
-    print("---- SHAPE DEBUG ----")
-    print("smoothness:", smoothness)
-    print("monotonic_ratio:", monotonic_ratio)
-    print("peaks:", peaks)
-    print("classification_before:", classification)
-    print("---------------------")
-    print("override_check:", is_smooth, is_monotonic, low_peaks)
-
     # -------------------------------
-    # FINAL CLEAN DECISION FLOW
+    # CALIBRATED DECISION FLOW
     # -------------------------------
 
     # 1. NORMAL PROTECTION (single source)
     if classification in ["Moderate Fault", "High Fault Risk"]:
-        if smoothness < 0.2 and monotonic_ratio > 0.9 and peaks <= 1:
-            print("FINAL → NORMAL (smooth monotonic)")
+        if smoothness < 0.22 and monotonic_ratio > 0.88 and peaks <= 1:
             classification = "Normal"
             confidence = min(confidence, 0.7)
             explanation = "Smooth monotonic FRA response — no structural deviation detected"
 
-    # 2. FAULT DECISION (single ladder — no overlaps)
+    # 2. FAULT DECISION (single ladder)
     else:
-        if peaks >= 4 and smoothness > 0.8:
-            print("FINAL → HIGH FAULT")
+        if peaks >= 5 and smoothness > 0.85:
             classification = "High Fault Risk"
             confidence = max(confidence, 0.8)
             explanation = "Multiple sharp resonance peaks indicate severe structural deformation"
 
         elif peaks >= 2 and smoothness > 0.45:
-            print("FINAL → MODERATE FAULT")
             classification = "Moderate Fault"
             confidence = max(confidence, 0.75)
             explanation = "Noticeable oscillations indicate possible winding displacement"
 
         elif smoothness > 0.2:
-            print("FINAL → MINOR DEVIATION")
             classification = "Minor Deviation"
             confidence = max(confidence, 0.65)
             explanation = "Slight irregularities detected in FRA response"
 
-    print("FINAL CLASS:", classification)
 
     return {
         "classification": classification,

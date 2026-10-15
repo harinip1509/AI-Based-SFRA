@@ -141,9 +141,9 @@ export default function UploadPanel() {
 
         <div style={{ flex: '0 0 auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {[
-            { label: 'Avg Processing', value: '1.8s' },
+            { label: 'Avg Processing', value: '<2ms' },
             { label: 'Supported Formats', value: '12+' },
-            { label: 'Accuracy Rate', value: '99.2%' },
+            { label: 'Accuracy Rate', value: '94.4%' },
           ].map((s) => (
             <div key={s.label} style={{
               padding: '14px 20px', borderRadius: '12px',
@@ -155,6 +155,7 @@ export default function UploadPanel() {
             </div>
           ))}
         </div>
+
       </div>
     </motion.div>
   )

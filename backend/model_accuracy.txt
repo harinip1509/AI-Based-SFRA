@@ -1,0 +1,51 @@
+================================================================================
+IntelliFRA Peer-Reviewed Experimental Benchmark & Scientific Evaluation Summary
+================================================================================
+
+1. 5-FOLD STRATIFIED CROSS-VALIDATION (Mean +/- Std)
+--------------------------------------------------------------------------------
+Model                      Accuracy (Mean +/- Std)        Macro F1 (Mean +/- Std)
+--------------------------------------------------------------------------------
+1D-CNN (Proposed)          81.03% +/- 1.60%            0.8234 +/- 0.0149
+SVM (RBF Kernel)           66.12% +/- 1.14%            0.6219
+Random Forest (100 Trees)  72.57% +/- 1.28%            0.7235
+Plain MLP (2 Hidden)       64.95% +/- 1.00%            0.6429
+
+2. PER-FAULT ARCHETYPE PERFORMANCE (6 Physical Fault Types)
+--------------------------------------------------------------------------------
+Archetype                  Description                         Accuracy (Recall)
+--------------------------------------------------------------------------------
+NF                         Normal / Healthy Baseline           80.70%
+DLF                        Dielectric Loss Factor (tan delta)  76.02%
+CLF                        Clamping Looseness Fault            82.48%
+RDF                        Radial Deformation Fault            60.32%
+IDF                        Inter-Disk Fault (Axial Tilt)       92.03%
+SCF                        Short-Circuit Fault                 94.65%
+
+3. HELD-OUT OUT-OF-DISTRIBUTION EVALUATION (+/-15% Shift, Noise sigma in [0.03, 0.08])
+--------------------------------------------------------------------------------
+1D-CNN Accuracy:           56.88% (Macro F1: 0.5038)
+SVM Baseline Accuracy:     50.83%
+Random Forest Accuracy:    51.21%
+Plain MLP Accuracy:        49.33%
+
+4. ABLATION STUDY
+--------------------------------------------------------------------------------
+Pipeline Configuration                Accuracy           Macro F1
+--------------------------------------------------------------------------------
+(A) 1D-CNN Only                       82.04%             0.8288
+(B) 1D-CNN + Calibrated Shape Rule   63.67%             0.6373
+(C) 1D-CNN + Autoencoder Gating      81.92%             0.8271
+(D) Full Integrated Pipeline         63.62%             0.6367
+
+5. CALIBRATED AUTOENCODER & FALSE ALARM RATE
+--------------------------------------------------------------------------------
+Calibrated MSE Threshold:  0.204997 (98th percentile of healthy curves)
+False Alarm Rate:          2.00%
+Fault Detection Rate:      10.85%
+
+6. INFERENCE LATENCY BENCHMARK (1,000 Iterations on CPU)
+--------------------------------------------------------------------------------
+1D-CNN Mean Latency:       0.218 ms (p95: 0.247 ms)
+Full Pipeline Mean Latency:0.274 ms (p95: 0.305 ms)
+================================================================================

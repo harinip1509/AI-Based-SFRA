@@ -1,0 +1,701 @@
+image,question,answer
+sfra/000001.png,What type of plot is shown?,Sweep Frequency Response Analysis (SFRA)
+sfra/000001.png,Is the dynamic system stable?,Yes
+sfra/000001.png,How many poles are present in the system transfer function?,1
+sfra/000001.png,How many finite zeros are present in the transfer function?,1
+sfra/000001.png,Is the system minimum-phase?,Yes
+sfra/000001.png,What is the estimated gain margin of the system?,Infinity
+sfra/000001.png,What is the estimated phase margin of the system?,Infinite / Unbounded
+sfra/000001.png,What is the gain crossover frequency?,None
+sfra/000001.png,What is the phase crossover frequency?,None
+sfra/000001.png,Does the magnitude response exhibit a resonant peak?,Yes
+sfra/000001.png,What is the resonance peak magnitude?,40.3 dB
+sfra/000001.png,What dynamic order best describes the underlying system?,First-order system
+sfra/000001.png,What is the approximate damping ratio (zeta) of the dominant modes?,1.0
+sfra/000001.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+inverse_nyquist/000002.png,What type of plot is shown?,Inverse Nyquist
+inverse_nyquist/000002.png,Is the dynamic system stable?,No
+inverse_nyquist/000002.png,How many poles are present in the system transfer function?,1
+inverse_nyquist/000002.png,How many finite zeros are present in the transfer function?,0
+inverse_nyquist/000002.png,Is the system minimum-phase?,Yes
+inverse_nyquist/000002.png,What is the estimated gain margin of the system?,Infinity
+inverse_nyquist/000002.png,What is the estimated phase margin of the system?,Infinite / Unbounded
+inverse_nyquist/000002.png,What is the gain crossover frequency?,None
+inverse_nyquist/000002.png,What is the phase crossover frequency?,None
+inverse_nyquist/000002.png,Does the magnitude response exhibit a resonant peak?,No
+inverse_nyquist/000002.png,What is the resonance peak magnitude?,No resonant peak
+inverse_nyquist/000002.png,What dynamic order best describes the underlying system?,First-order system
+inverse_nyquist/000002.png,What is the approximate damping ratio (zeta) of the dominant modes?,1.0
+inverse_nyquist/000002.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+inverse_nyquist/000003.png,What type of plot is shown?,Inverse Nyquist
+inverse_nyquist/000003.png,Is the dynamic system stable?,Yes
+inverse_nyquist/000003.png,How many poles are present in the system transfer function?,1
+inverse_nyquist/000003.png,How many finite zeros are present in the transfer function?,0
+inverse_nyquist/000003.png,Is the system minimum-phase?,Yes
+inverse_nyquist/000003.png,What is the estimated gain margin of the system?,Infinity
+inverse_nyquist/000003.png,What is the estimated phase margin of the system?,105.7 deg
+inverse_nyquist/000003.png,What is the gain crossover frequency?,3.15 rad/s
+inverse_nyquist/000003.png,What is the phase crossover frequency?,None
+inverse_nyquist/000003.png,Does the magnitude response exhibit a resonant peak?,No
+inverse_nyquist/000003.png,What is the resonance peak magnitude?,No resonant peak
+inverse_nyquist/000003.png,What dynamic order best describes the underlying system?,First-order system
+inverse_nyquist/000003.png,What is the approximate damping ratio (zeta) of the dominant modes?,1.0
+inverse_nyquist/000003.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+nichols/000004.png,What type of plot is shown?,Nichols Chart
+nichols/000004.png,Is the dynamic system stable?,Yes
+nichols/000004.png,How many poles are present in the system transfer function?,3
+nichols/000004.png,How many finite zeros are present in the transfer function?,0
+nichols/000004.png,Is the system minimum-phase?,Yes
+nichols/000004.png,What is the estimated gain margin of the system?,46.1 dB
+nichols/000004.png,What is the estimated phase margin of the system?,Infinite / Unbounded
+nichols/000004.png,What is the gain crossover frequency?,None
+nichols/000004.png,What is the phase crossover frequency?,9.91 rad/s
+nichols/000004.png,Does the magnitude response exhibit a resonant peak?,Yes
+nichols/000004.png,What is the resonance peak magnitude?,-36.0 dB
+nichols/000004.png,What dynamic order best describes the underlying system?,3th-order system
+nichols/000004.png,What is the approximate damping ratio (zeta) of the dominant modes?,0.26
+nichols/000004.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+bode/000005.png,What type of plot is shown?,Bode
+bode/000005.png,Is the dynamic system stable?,Yes
+bode/000005.png,How many poles are present in the system transfer function?,4
+bode/000005.png,How many finite zeros are present in the transfer function?,2
+bode/000005.png,Is the system minimum-phase?,No
+bode/000005.png,What is the estimated gain margin of the system?,32.2 dB
+bode/000005.png,What is the estimated phase margin of the system?,Infinite / Unbounded
+bode/000005.png,What is the gain crossover frequency?,None
+bode/000005.png,What is the phase crossover frequency?,7.11 rad/s
+bode/000005.png,Does the magnitude response exhibit a resonant peak?,Yes
+bode/000005.png,What is the resonance peak magnitude?,-24.2 dB
+bode/000005.png,What dynamic order best describes the underlying system?,4th-order system
+bode/000005.png,What is the approximate damping ratio (zeta) of the dominant modes?,0.72
+bode/000005.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+inverse_nyquist/000006.png,What type of plot is shown?,Inverse Nyquist
+inverse_nyquist/000006.png,Is the dynamic system stable?,Yes
+inverse_nyquist/000006.png,How many poles are present in the system transfer function?,2
+inverse_nyquist/000006.png,How many finite zeros are present in the transfer function?,1
+inverse_nyquist/000006.png,Is the system minimum-phase?,Yes
+inverse_nyquist/000006.png,What is the estimated gain margin of the system?,Infinity
+inverse_nyquist/000006.png,What is the estimated phase margin of the system?,Infinite / Unbounded
+inverse_nyquist/000006.png,What is the gain crossover frequency?,None
+inverse_nyquist/000006.png,What is the phase crossover frequency?,None
+inverse_nyquist/000006.png,Does the magnitude response exhibit a resonant peak?,Yes
+inverse_nyquist/000006.png,What is the resonance peak magnitude?,-16.7 dB
+inverse_nyquist/000006.png,What dynamic order best describes the underlying system?,Second-order system
+inverse_nyquist/000006.png,What is the approximate damping ratio (zeta) of the dominant modes?,1.38
+inverse_nyquist/000006.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+nichols/000007.png,What type of plot is shown?,Nichols Chart
+nichols/000007.png,Is the dynamic system stable?,Yes
+nichols/000007.png,How many poles are present in the system transfer function?,3
+nichols/000007.png,How many finite zeros are present in the transfer function?,1
+nichols/000007.png,Is the system minimum-phase?,Yes
+nichols/000007.png,What is the estimated gain margin of the system?,100.1 dB
+nichols/000007.png,What is the estimated phase margin of the system?,Infinite / Unbounded
+nichols/000007.png,What is the gain crossover frequency?,None
+nichols/000007.png,What is the phase crossover frequency?,1000.00 rad/s
+nichols/000007.png,Does the magnitude response exhibit a resonant peak?,Yes
+nichols/000007.png,What is the resonance peak magnitude?,-24.9 dB
+nichols/000007.png,What dynamic order best describes the underlying system?,3th-order system
+nichols/000007.png,What is the approximate damping ratio (zeta) of the dominant modes?,0.52
+nichols/000007.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+nyquist/000008.png,What type of plot is shown?,Nyquist
+nyquist/000008.png,Is the dynamic system stable?,Yes
+nyquist/000008.png,How many poles are present in the system transfer function?,2
+nyquist/000008.png,How many finite zeros are present in the transfer function?,1
+nyquist/000008.png,Is the system minimum-phase?,No
+nyquist/000008.png,What is the estimated gain margin of the system?,Infinity
+nyquist/000008.png,What is the estimated phase margin of the system?,Infinite / Unbounded
+nyquist/000008.png,What is the gain crossover frequency?,None
+nyquist/000008.png,What is the phase crossover frequency?,None
+nyquist/000008.png,Does the magnitude response exhibit a resonant peak?,Yes
+nyquist/000008.png,What is the resonance peak magnitude?,-11.8 dB
+nyquist/000008.png,What dynamic order best describes the underlying system?,Second-order system
+nyquist/000008.png,What is the approximate damping ratio (zeta) of the dominant modes?,1.0
+nyquist/000008.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+nyquist/000009.png,What type of plot is shown?,Nyquist
+nyquist/000009.png,Is the dynamic system stable?,No
+nyquist/000009.png,How many poles are present in the system transfer function?,1
+nyquist/000009.png,How many finite zeros are present in the transfer function?,1
+nyquist/000009.png,Is the system minimum-phase?,Yes
+nyquist/000009.png,What is the estimated gain margin of the system?,Infinity
+nyquist/000009.png,What is the estimated phase margin of the system?,Infinite / Unbounded
+nyquist/000009.png,What is the gain crossover frequency?,None
+nyquist/000009.png,What is the phase crossover frequency?,None
+nyquist/000009.png,Does the magnitude response exhibit a resonant peak?,Yes
+nyquist/000009.png,What is the resonance peak magnitude?,12.8 dB
+nyquist/000009.png,What dynamic order best describes the underlying system?,First-order system
+nyquist/000009.png,What is the approximate damping ratio (zeta) of the dominant modes?,1.0
+nyquist/000009.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+sfra/000010.png,What type of plot is shown?,Sweep Frequency Response Analysis (SFRA)
+sfra/000010.png,Is the dynamic system stable?,Yes
+sfra/000010.png,How many poles are present in the system transfer function?,3
+sfra/000010.png,How many finite zeros are present in the transfer function?,2
+sfra/000010.png,Is the system minimum-phase?,No
+sfra/000010.png,What is the estimated gain margin of the system?,Infinity
+sfra/000010.png,What is the estimated phase margin of the system?,-30.8 deg
+sfra/000010.png,What is the gain crossover frequency?,0.92 rad/s
+sfra/000010.png,What is the phase crossover frequency?,None
+sfra/000010.png,Does the magnitude response exhibit a resonant peak?,No
+sfra/000010.png,What is the resonance peak magnitude?,No resonant peak
+sfra/000010.png,What dynamic order best describes the underlying system?,3th-order system
+sfra/000010.png,What is the approximate damping ratio (zeta) of the dominant modes?,0.65
+sfra/000010.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+nichols/000011.png,What type of plot is shown?,Nichols Chart
+nichols/000011.png,Is the dynamic system stable?,Yes
+nichols/000011.png,How many poles are present in the system transfer function?,6
+nichols/000011.png,How many finite zeros are present in the transfer function?,4
+nichols/000011.png,Is the system minimum-phase?,Yes
+nichols/000011.png,What is the estimated gain margin of the system?,Infinity
+nichols/000011.png,What is the estimated phase margin of the system?,Infinite / Unbounded
+nichols/000011.png,What is the gain crossover frequency?,None
+nichols/000011.png,What is the phase crossover frequency?,None
+nichols/000011.png,Does the magnitude response exhibit a resonant peak?,Yes
+nichols/000011.png,What is the resonance peak magnitude?,-134.3 dB
+nichols/000011.png,What dynamic order best describes the underlying system?,Transformer winding ladder network
+nichols/000011.png,What is the approximate damping ratio (zeta) of the dominant modes?,0.05
+nichols/000011.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+sfra/000012.png,What type of plot is shown?,Sweep Frequency Response Analysis (SFRA)
+sfra/000012.png,Is the dynamic system stable?,Yes
+sfra/000012.png,How many poles are present in the system transfer function?,2
+sfra/000012.png,How many finite zeros are present in the transfer function?,0
+sfra/000012.png,Is the system minimum-phase?,Yes
+sfra/000012.png,What is the estimated gain margin of the system?,50.3 dB
+sfra/000012.png,What is the estimated phase margin of the system?,58.2 deg
+sfra/000012.png,What is the gain crossover frequency?,46.70 rad/s
+sfra/000012.png,What is the phase crossover frequency?,1000.00 rad/s
+sfra/000012.png,Does the magnitude response exhibit a resonant peak?,No
+sfra/000012.png,What is the resonance peak magnitude?,No resonant peak
+sfra/000012.png,What dynamic order best describes the underlying system?,Second-order system
+sfra/000012.png,What is the approximate damping ratio (zeta) of the dominant modes?,1.14
+sfra/000012.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+inverse_nyquist/000013.png,What type of plot is shown?,Inverse Nyquist
+inverse_nyquist/000013.png,Is the dynamic system stable?,Yes
+inverse_nyquist/000013.png,How many poles are present in the system transfer function?,1
+inverse_nyquist/000013.png,How many finite zeros are present in the transfer function?,1
+inverse_nyquist/000013.png,Is the system minimum-phase?,Yes
+inverse_nyquist/000013.png,What is the estimated gain margin of the system?,Infinity
+inverse_nyquist/000013.png,What is the estimated phase margin of the system?,-166.2 deg
+inverse_nyquist/000013.png,What is the gain crossover frequency?,0.10 rad/s
+inverse_nyquist/000013.png,What is the phase crossover frequency?,None
+inverse_nyquist/000013.png,Does the magnitude response exhibit a resonant peak?,Yes
+inverse_nyquist/000013.png,What is the resonance peak magnitude?,9.4 dB
+inverse_nyquist/000013.png,What dynamic order best describes the underlying system?,First-order system
+inverse_nyquist/000013.png,What is the approximate damping ratio (zeta) of the dominant modes?,1.0
+inverse_nyquist/000013.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+polar/000014.png,What type of plot is shown?,Polar
+polar/000014.png,Is the dynamic system stable?,No
+polar/000014.png,How many poles are present in the system transfer function?,1
+polar/000014.png,How many finite zeros are present in the transfer function?,1
+polar/000014.png,Is the system minimum-phase?,Yes
+polar/000014.png,What is the estimated gain margin of the system?,Infinity
+polar/000014.png,What is the estimated phase margin of the system?,-156.1 deg
+polar/000014.png,What is the gain crossover frequency?,0.10 rad/s
+polar/000014.png,What is the phase crossover frequency?,None
+polar/000014.png,Does the magnitude response exhibit a resonant peak?,Yes
+polar/000014.png,What is the resonance peak magnitude?,17.6 dB
+polar/000014.png,What dynamic order best describes the underlying system?,First-order system
+polar/000014.png,What is the approximate damping ratio (zeta) of the dominant modes?,1.0
+polar/000014.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+inverse_nyquist/000015.png,What type of plot is shown?,Inverse Nyquist
+inverse_nyquist/000015.png,Is the dynamic system stable?,Yes
+inverse_nyquist/000015.png,How many poles are present in the system transfer function?,2
+inverse_nyquist/000015.png,How many finite zeros are present in the transfer function?,0
+inverse_nyquist/000015.png,Is the system minimum-phase?,Yes
+inverse_nyquist/000015.png,What is the estimated gain margin of the system?,62.7 dB
+inverse_nyquist/000015.png,What is the estimated phase margin of the system?,74.0 deg
+inverse_nyquist/000015.png,What is the gain crossover frequency?,21.51 rad/s
+inverse_nyquist/000015.png,What is the phase crossover frequency?,1000.00 rad/s
+inverse_nyquist/000015.png,Does the magnitude response exhibit a resonant peak?,No
+inverse_nyquist/000015.png,What is the resonance peak magnitude?,No resonant peak
+inverse_nyquist/000015.png,What dynamic order best describes the underlying system?,Second-order system
+inverse_nyquist/000015.png,What is the approximate damping ratio (zeta) of the dominant modes?,1.0
+inverse_nyquist/000015.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+nyquist/000016.png,What type of plot is shown?,Nyquist
+nyquist/000016.png,Is the dynamic system stable?,No
+nyquist/000016.png,How many poles are present in the system transfer function?,1
+nyquist/000016.png,How many finite zeros are present in the transfer function?,0
+nyquist/000016.png,Is the system minimum-phase?,Yes
+nyquist/000016.png,What is the estimated gain margin of the system?,Infinity
+nyquist/000016.png,What is the estimated phase margin of the system?,-111.6 deg
+nyquist/000016.png,What is the gain crossover frequency?,2.10 rad/s
+nyquist/000016.png,What is the phase crossover frequency?,None
+nyquist/000016.png,Does the magnitude response exhibit a resonant peak?,No
+nyquist/000016.png,What is the resonance peak magnitude?,No resonant peak
+nyquist/000016.png,What dynamic order best describes the underlying system?,First-order system
+nyquist/000016.png,What is the approximate damping ratio (zeta) of the dominant modes?,1.0
+nyquist/000016.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+polar/000017.png,What type of plot is shown?,Polar
+polar/000017.png,Is the dynamic system stable?,Yes
+polar/000017.png,How many poles are present in the system transfer function?,2
+polar/000017.png,How many finite zeros are present in the transfer function?,1
+polar/000017.png,Is the system minimum-phase?,No
+polar/000017.png,What is the estimated gain margin of the system?,Infinity
+polar/000017.png,What is the estimated phase margin of the system?,-106.6 deg
+polar/000017.png,What is the gain crossover frequency?,1.54 rad/s
+polar/000017.png,What is the phase crossover frequency?,None
+polar/000017.png,Does the magnitude response exhibit a resonant peak?,Yes
+polar/000017.png,What is the resonance peak magnitude?,3.3 dB
+polar/000017.png,What dynamic order best describes the underlying system?,Second-order system
+polar/000017.png,What is the approximate damping ratio (zeta) of the dominant modes?,0.8
+polar/000017.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+nyquist/000018.png,What type of plot is shown?,Nyquist
+nyquist/000018.png,Is the dynamic system stable?,Yes
+nyquist/000018.png,How many poles are present in the system transfer function?,2
+nyquist/000018.png,How many finite zeros are present in the transfer function?,0
+nyquist/000018.png,Is the system minimum-phase?,Yes
+nyquist/000018.png,What is the estimated gain margin of the system?,53.9 dB
+nyquist/000018.png,What is the estimated phase margin of the system?,53.9 deg
+nyquist/000018.png,What is the gain crossover frequency?,40.29 rad/s
+nyquist/000018.png,What is the phase crossover frequency?,1000.00 rad/s
+nyquist/000018.png,Does the magnitude response exhibit a resonant peak?,No
+nyquist/000018.png,What is the resonance peak magnitude?,No resonant peak
+nyquist/000018.png,What dynamic order best describes the underlying system?,Second-order system
+nyquist/000018.png,What is the approximate damping ratio (zeta) of the dominant modes?,1.0
+nyquist/000018.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+inverse_nyquist/000019.png,What type of plot is shown?,Inverse Nyquist
+inverse_nyquist/000019.png,Is the dynamic system stable?,Yes
+inverse_nyquist/000019.png,How many poles are present in the system transfer function?,2
+inverse_nyquist/000019.png,How many finite zeros are present in the transfer function?,0
+inverse_nyquist/000019.png,Is the system minimum-phase?,Yes
+inverse_nyquist/000019.png,What is the estimated gain margin of the system?,51.3 dB
+inverse_nyquist/000019.png,What is the estimated phase margin of the system?,80.6 deg
+inverse_nyquist/000019.png,What is the gain crossover frequency?,30.55 rad/s
+inverse_nyquist/000019.png,What is the phase crossover frequency?,1000.00 rad/s
+inverse_nyquist/000019.png,Does the magnitude response exhibit a resonant peak?,No
+inverse_nyquist/000019.png,What is the resonance peak magnitude?,No resonant peak
+inverse_nyquist/000019.png,What dynamic order best describes the underlying system?,Second-order system
+inverse_nyquist/000019.png,What is the approximate damping ratio (zeta) of the dominant modes?,2.02
+inverse_nyquist/000019.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+nyquist/000020.png,What type of plot is shown?,Nyquist
+nyquist/000020.png,Is the dynamic system stable?,Yes
+nyquist/000020.png,How many poles are present in the system transfer function?,1
+nyquist/000020.png,How many finite zeros are present in the transfer function?,0
+nyquist/000020.png,Is the system minimum-phase?,Yes
+nyquist/000020.png,What is the estimated gain margin of the system?,Infinity
+nyquist/000020.png,What is the estimated phase margin of the system?,108.4 deg
+nyquist/000020.png,What is the gain crossover frequency?,4.40 rad/s
+nyquist/000020.png,What is the phase crossover frequency?,None
+nyquist/000020.png,Does the magnitude response exhibit a resonant peak?,No
+nyquist/000020.png,What is the resonance peak magnitude?,No resonant peak
+nyquist/000020.png,What dynamic order best describes the underlying system?,First-order system
+nyquist/000020.png,What is the approximate damping ratio (zeta) of the dominant modes?,1.0
+nyquist/000020.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+bode/000021.png,What type of plot is shown?,Bode
+bode/000021.png,Is the dynamic system stable?,Yes
+bode/000021.png,How many poles are present in the system transfer function?,1
+bode/000021.png,How many finite zeros are present in the transfer function?,0
+bode/000021.png,Is the system minimum-phase?,Yes
+bode/000021.png,What is the estimated gain margin of the system?,Infinity
+bode/000021.png,What is the estimated phase margin of the system?,102.7 deg
+bode/000021.png,What is the gain crossover frequency?,9.55 rad/s
+bode/000021.png,What is the phase crossover frequency?,None
+bode/000021.png,Does the magnitude response exhibit a resonant peak?,No
+bode/000021.png,What is the resonance peak magnitude?,No resonant peak
+bode/000021.png,What dynamic order best describes the underlying system?,First-order system
+bode/000021.png,What is the approximate damping ratio (zeta) of the dominant modes?,1.0
+bode/000021.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+nyquist/000022.png,What type of plot is shown?,Nyquist
+nyquist/000022.png,Is the dynamic system stable?,Yes
+nyquist/000022.png,How many poles are present in the system transfer function?,4
+nyquist/000022.png,How many finite zeros are present in the transfer function?,1
+nyquist/000022.png,Is the system minimum-phase?,Yes
+nyquist/000022.png,What is the estimated gain margin of the system?,61.3 dB
+nyquist/000022.png,What is the estimated phase margin of the system?,Infinite / Unbounded
+nyquist/000022.png,What is the gain crossover frequency?,None
+nyquist/000022.png,What is the phase crossover frequency?,25.40 rad/s
+nyquist/000022.png,Does the magnitude response exhibit a resonant peak?,Yes
+nyquist/000022.png,What is the resonance peak magnitude?,-56.3 dB
+nyquist/000022.png,What dynamic order best describes the underlying system?,4th-order system
+nyquist/000022.png,What is the approximate damping ratio (zeta) of the dominant modes?,0.26
+nyquist/000022.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+sfra/000023.png,What type of plot is shown?,Sweep Frequency Response Analysis (SFRA)
+sfra/000023.png,Is the dynamic system stable?,Yes
+sfra/000023.png,How many poles are present in the system transfer function?,6
+sfra/000023.png,How many finite zeros are present in the transfer function?,4
+sfra/000023.png,Is the system minimum-phase?,Yes
+sfra/000023.png,What is the estimated gain margin of the system?,Infinity
+sfra/000023.png,What is the estimated phase margin of the system?,Infinite / Unbounded
+sfra/000023.png,What is the gain crossover frequency?,None
+sfra/000023.png,What is the phase crossover frequency?,None
+sfra/000023.png,Does the magnitude response exhibit a resonant peak?,Yes
+sfra/000023.png,What is the resonance peak magnitude?,-134.6 dB
+sfra/000023.png,What dynamic order best describes the underlying system?,Transformer winding ladder network
+sfra/000023.png,What is the approximate damping ratio (zeta) of the dominant modes?,0.05
+sfra/000023.png,Does the response indicate transformer structural degradation or high-frequency deformation?,"Yes, localized resonant shifts are present"
+nichols/000024.png,What type of plot is shown?,Nichols Chart
+nichols/000024.png,Is the dynamic system stable?,Yes
+nichols/000024.png,How many poles are present in the system transfer function?,3
+nichols/000024.png,How many finite zeros are present in the transfer function?,0
+nichols/000024.png,Is the system minimum-phase?,Yes
+nichols/000024.png,What is the estimated gain margin of the system?,38.9 dB
+nichols/000024.png,What is the estimated phase margin of the system?,Infinite / Unbounded
+nichols/000024.png,What is the gain crossover frequency?,None
+nichols/000024.png,What is the phase crossover frequency?,8.24 rad/s
+nichols/000024.png,Does the magnitude response exhibit a resonant peak?,No
+nichols/000024.png,What is the resonance peak magnitude?,No resonant peak
+nichols/000024.png,What dynamic order best describes the underlying system?,3th-order system
+nichols/000024.png,What is the approximate damping ratio (zeta) of the dominant modes?,0.72
+nichols/000024.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+bode/000025.png,What type of plot is shown?,Bode
+bode/000025.png,Is the dynamic system stable?,Yes
+bode/000025.png,How many poles are present in the system transfer function?,6
+bode/000025.png,How many finite zeros are present in the transfer function?,4
+bode/000025.png,Is the system minimum-phase?,Yes
+bode/000025.png,What is the estimated gain margin of the system?,Infinity
+bode/000025.png,What is the estimated phase margin of the system?,Infinite / Unbounded
+bode/000025.png,What is the gain crossover frequency?,None
+bode/000025.png,What is the phase crossover frequency?,None
+bode/000025.png,Does the magnitude response exhibit a resonant peak?,Yes
+bode/000025.png,What is the resonance peak magnitude?,-133.8 dB
+bode/000025.png,What dynamic order best describes the underlying system?,Transformer winding ladder network
+bode/000025.png,What is the approximate damping ratio (zeta) of the dominant modes?,0.05
+bode/000025.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+nichols/000026.png,What type of plot is shown?,Nichols Chart
+nichols/000026.png,Is the dynamic system stable?,Yes
+nichols/000026.png,How many poles are present in the system transfer function?,2
+nichols/000026.png,How many finite zeros are present in the transfer function?,1
+nichols/000026.png,Is the system minimum-phase?,Yes
+nichols/000026.png,What is the estimated gain margin of the system?,Infinity
+nichols/000026.png,What is the estimated phase margin of the system?,Infinite / Unbounded
+nichols/000026.png,What is the gain crossover frequency?,None
+nichols/000026.png,What is the phase crossover frequency?,None
+nichols/000026.png,Does the magnitude response exhibit a resonant peak?,Yes
+nichols/000026.png,What is the resonance peak magnitude?,-22.1 dB
+nichols/000026.png,What dynamic order best describes the underlying system?,Second-order system
+nichols/000026.png,What is the approximate damping ratio (zeta) of the dominant modes?,0.82
+nichols/000026.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+nichols/000027.png,What type of plot is shown?,Nichols Chart
+nichols/000027.png,Is the dynamic system stable?,Yes
+nichols/000027.png,How many poles are present in the system transfer function?,6
+nichols/000027.png,How many finite zeros are present in the transfer function?,4
+nichols/000027.png,Is the system minimum-phase?,Yes
+nichols/000027.png,What is the estimated gain margin of the system?,Infinity
+nichols/000027.png,What is the estimated phase margin of the system?,Infinite / Unbounded
+nichols/000027.png,What is the gain crossover frequency?,None
+nichols/000027.png,What is the phase crossover frequency?,None
+nichols/000027.png,Does the magnitude response exhibit a resonant peak?,Yes
+nichols/000027.png,What is the resonance peak magnitude?,-134.1 dB
+nichols/000027.png,What dynamic order best describes the underlying system?,Transformer winding ladder network
+nichols/000027.png,What is the approximate damping ratio (zeta) of the dominant modes?,0.05
+nichols/000027.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+polar/000028.png,What type of plot is shown?,Polar
+polar/000028.png,Is the dynamic system stable?,Yes
+polar/000028.png,How many poles are present in the system transfer function?,1
+polar/000028.png,How many finite zeros are present in the transfer function?,1
+polar/000028.png,Is the system minimum-phase?,Yes
+polar/000028.png,What is the estimated gain margin of the system?,Infinity
+polar/000028.png,What is the estimated phase margin of the system?,Infinite / Unbounded
+polar/000028.png,What is the gain crossover frequency?,None
+polar/000028.png,What is the phase crossover frequency?,None
+polar/000028.png,Does the magnitude response exhibit a resonant peak?,Yes
+polar/000028.png,What is the resonance peak magnitude?,25.2 dB
+polar/000028.png,What dynamic order best describes the underlying system?,First-order system
+polar/000028.png,What is the approximate damping ratio (zeta) of the dominant modes?,1.0
+polar/000028.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+inverse_nyquist/000029.png,What type of plot is shown?,Inverse Nyquist
+inverse_nyquist/000029.png,Is the dynamic system stable?,No
+inverse_nyquist/000029.png,How many poles are present in the system transfer function?,1
+inverse_nyquist/000029.png,How many finite zeros are present in the transfer function?,1
+inverse_nyquist/000029.png,Is the system minimum-phase?,Yes
+inverse_nyquist/000029.png,What is the estimated gain margin of the system?,Infinity
+inverse_nyquist/000029.png,What is the estimated phase margin of the system?,-67.1 deg
+inverse_nyquist/000029.png,What is the gain crossover frequency?,0.76 rad/s
+inverse_nyquist/000029.png,What is the phase crossover frequency?,None
+inverse_nyquist/000029.png,Does the magnitude response exhibit a resonant peak?,Yes
+inverse_nyquist/000029.png,What is the resonance peak magnitude?,0.8 dB
+inverse_nyquist/000029.png,What dynamic order best describes the underlying system?,First-order system
+inverse_nyquist/000029.png,What is the approximate damping ratio (zeta) of the dominant modes?,1.0
+inverse_nyquist/000029.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+inverse_nyquist/000030.png,What type of plot is shown?,Inverse Nyquist
+inverse_nyquist/000030.png,Is the dynamic system stable?,Yes
+inverse_nyquist/000030.png,How many poles are present in the system transfer function?,2
+inverse_nyquist/000030.png,How many finite zeros are present in the transfer function?,1
+inverse_nyquist/000030.png,Is the system minimum-phase?,Yes
+inverse_nyquist/000030.png,What is the estimated gain margin of the system?,Infinity
+inverse_nyquist/000030.png,What is the estimated phase margin of the system?,Infinite / Unbounded
+inverse_nyquist/000030.png,What is the gain crossover frequency?,None
+inverse_nyquist/000030.png,What is the phase crossover frequency?,None
+inverse_nyquist/000030.png,Does the magnitude response exhibit a resonant peak?,Yes
+inverse_nyquist/000030.png,What is the resonance peak magnitude?,-15.6 dB
+inverse_nyquist/000030.png,What dynamic order best describes the underlying system?,Second-order system
+inverse_nyquist/000030.png,What is the approximate damping ratio (zeta) of the dominant modes?,1.0
+inverse_nyquist/000030.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+sfra/000031.png,What type of plot is shown?,Sweep Frequency Response Analysis (SFRA)
+sfra/000031.png,Is the dynamic system stable?,Yes
+sfra/000031.png,How many poles are present in the system transfer function?,3
+sfra/000031.png,How many finite zeros are present in the transfer function?,1
+sfra/000031.png,Is the system minimum-phase?,No
+sfra/000031.png,What is the estimated gain margin of the system?,113.9 dB
+sfra/000031.png,What is the estimated phase margin of the system?,Infinite / Unbounded
+sfra/000031.png,What is the gain crossover frequency?,None
+sfra/000031.png,What is the phase crossover frequency?,1000.00 rad/s
+sfra/000031.png,Does the magnitude response exhibit a resonant peak?,No
+sfra/000031.png,What is the resonance peak magnitude?,No resonant peak
+sfra/000031.png,What dynamic order best describes the underlying system?,3th-order system
+sfra/000031.png,What is the approximate damping ratio (zeta) of the dominant modes?,0.47
+sfra/000031.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+inverse_nyquist/000032.png,What type of plot is shown?,Inverse Nyquist
+inverse_nyquist/000032.png,Is the dynamic system stable?,Yes
+inverse_nyquist/000032.png,How many poles are present in the system transfer function?,1
+inverse_nyquist/000032.png,How many finite zeros are present in the transfer function?,1
+inverse_nyquist/000032.png,Is the system minimum-phase?,Yes
+inverse_nyquist/000032.png,What is the estimated gain margin of the system?,Infinity
+inverse_nyquist/000032.png,What is the estimated phase margin of the system?,Infinite / Unbounded
+inverse_nyquist/000032.png,What is the gain crossover frequency?,None
+inverse_nyquist/000032.png,What is the phase crossover frequency?,None
+inverse_nyquist/000032.png,Does the magnitude response exhibit a resonant peak?,Yes
+inverse_nyquist/000032.png,What is the resonance peak magnitude?,32.4 dB
+inverse_nyquist/000032.png,What dynamic order best describes the underlying system?,First-order system
+inverse_nyquist/000032.png,What is the approximate damping ratio (zeta) of the dominant modes?,1.0
+inverse_nyquist/000032.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+nyquist/000033.png,What type of plot is shown?,Nyquist
+nyquist/000033.png,Is the dynamic system stable?,Yes
+nyquist/000033.png,How many poles are present in the system transfer function?,4
+nyquist/000033.png,How many finite zeros are present in the transfer function?,1
+nyquist/000033.png,Is the system minimum-phase?,No
+nyquist/000033.png,What is the estimated gain margin of the system?,60.2 dB
+nyquist/000033.png,What is the estimated phase margin of the system?,Infinite / Unbounded
+nyquist/000033.png,What is the gain crossover frequency?,None
+nyquist/000033.png,What is the phase crossover frequency?,25.87 rad/s
+nyquist/000033.png,Does the magnitude response exhibit a resonant peak?,Yes
+nyquist/000033.png,What is the resonance peak magnitude?,-51.2 dB
+nyquist/000033.png,What dynamic order best describes the underlying system?,4th-order system
+nyquist/000033.png,What is the approximate damping ratio (zeta) of the dominant modes?,0.53
+nyquist/000033.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+sfra/000034.png,What type of plot is shown?,Sweep Frequency Response Analysis (SFRA)
+sfra/000034.png,Is the dynamic system stable?,No
+sfra/000034.png,How many poles are present in the system transfer function?,1
+sfra/000034.png,How many finite zeros are present in the transfer function?,0
+sfra/000034.png,Is the system minimum-phase?,Yes
+sfra/000034.png,What is the estimated gain margin of the system?,Infinity
+sfra/000034.png,What is the estimated phase margin of the system?,-154.7 deg
+sfra/000034.png,What is the gain crossover frequency?,0.25 rad/s
+sfra/000034.png,What is the phase crossover frequency?,None
+sfra/000034.png,Does the magnitude response exhibit a resonant peak?,No
+sfra/000034.png,What is the resonance peak magnitude?,No resonant peak
+sfra/000034.png,What dynamic order best describes the underlying system?,First-order system
+sfra/000034.png,What is the approximate damping ratio (zeta) of the dominant modes?,1.0
+sfra/000034.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+inverse_nyquist/000035.png,What type of plot is shown?,Inverse Nyquist
+inverse_nyquist/000035.png,Is the dynamic system stable?,Yes
+inverse_nyquist/000035.png,How many poles are present in the system transfer function?,2
+inverse_nyquist/000035.png,How many finite zeros are present in the transfer function?,0
+inverse_nyquist/000035.png,Is the system minimum-phase?,Yes
+inverse_nyquist/000035.png,What is the estimated gain margin of the system?,61.9 dB
+inverse_nyquist/000035.png,What is the estimated phase margin of the system?,23.6 deg
+inverse_nyquist/000035.png,What is the gain crossover frequency?,28.90 rad/s
+inverse_nyquist/000035.png,What is the phase crossover frequency?,1000.00 rad/s
+inverse_nyquist/000035.png,Does the magnitude response exhibit a resonant peak?,No
+inverse_nyquist/000035.png,What is the resonance peak magnitude?,No resonant peak
+inverse_nyquist/000035.png,What dynamic order best describes the underlying system?,Second-order system
+inverse_nyquist/000035.png,What is the approximate damping ratio (zeta) of the dominant modes?,0.58
+inverse_nyquist/000035.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+polar/000036.png,What type of plot is shown?,Polar
+polar/000036.png,Is the dynamic system stable?,Yes
+polar/000036.png,How many poles are present in the system transfer function?,1
+polar/000036.png,How many finite zeros are present in the transfer function?,0
+polar/000036.png,Is the system minimum-phase?,Yes
+polar/000036.png,What is the estimated gain margin of the system?,Infinity
+polar/000036.png,What is the estimated phase margin of the system?,114.6 deg
+polar/000036.png,What is the gain crossover frequency?,11.27 rad/s
+polar/000036.png,What is the phase crossover frequency?,None
+polar/000036.png,Does the magnitude response exhibit a resonant peak?,No
+polar/000036.png,What is the resonance peak magnitude?,No resonant peak
+polar/000036.png,What dynamic order best describes the underlying system?,First-order system
+polar/000036.png,What is the approximate damping ratio (zeta) of the dominant modes?,1.0
+polar/000036.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+nyquist/000037.png,What type of plot is shown?,Nyquist
+nyquist/000037.png,Is the dynamic system stable?,Yes
+nyquist/000037.png,How many poles are present in the system transfer function?,3
+nyquist/000037.png,How many finite zeros are present in the transfer function?,2
+nyquist/000037.png,Is the system minimum-phase?,No
+nyquist/000037.png,What is the estimated gain margin of the system?,11.5 dB
+nyquist/000037.png,What is the estimated phase margin of the system?,Infinite / Unbounded
+nyquist/000037.png,What is the gain crossover frequency?,None
+nyquist/000037.png,What is the phase crossover frequency?,7.24 rad/s
+nyquist/000037.png,Does the magnitude response exhibit a resonant peak?,No
+nyquist/000037.png,What is the resonance peak magnitude?,No resonant peak
+nyquist/000037.png,What dynamic order best describes the underlying system?,3th-order system
+nyquist/000037.png,What is the approximate damping ratio (zeta) of the dominant modes?,0.22
+nyquist/000037.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+polar/000038.png,What type of plot is shown?,Polar
+polar/000038.png,Is the dynamic system stable?,Yes
+polar/000038.png,How many poles are present in the system transfer function?,2
+polar/000038.png,How many finite zeros are present in the transfer function?,0
+polar/000038.png,Is the system minimum-phase?,Yes
+polar/000038.png,What is the estimated gain margin of the system?,64.9 dB
+polar/000038.png,What is the estimated phase margin of the system?,10.5 deg
+polar/000038.png,What is the gain crossover frequency?,27.34 rad/s
+polar/000038.png,What is the phase crossover frequency?,1000.00 rad/s
+polar/000038.png,Does the magnitude response exhibit a resonant peak?,Yes
+polar/000038.png,What is the resonance peak magnitude?,20.8 dB
+polar/000038.png,What dynamic order best describes the underlying system?,Second-order system
+polar/000038.png,What is the approximate damping ratio (zeta) of the dominant modes?,0.13
+polar/000038.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+bode/000039.png,What type of plot is shown?,Bode
+bode/000039.png,Is the dynamic system stable?,Yes
+bode/000039.png,How many poles are present in the system transfer function?,4
+bode/000039.png,How many finite zeros are present in the transfer function?,1
+bode/000039.png,Is the system minimum-phase?,Yes
+bode/000039.png,What is the estimated gain margin of the system?,51.4 dB
+bode/000039.png,What is the estimated phase margin of the system?,Infinite / Unbounded
+bode/000039.png,What is the gain crossover frequency?,None
+bode/000039.png,What is the phase crossover frequency?,11.07 rad/s
+bode/000039.png,Does the magnitude response exhibit a resonant peak?,Yes
+bode/000039.png,What is the resonance peak magnitude?,-40.5 dB
+bode/000039.png,What dynamic order best describes the underlying system?,4th-order system
+bode/000039.png,What is the approximate damping ratio (zeta) of the dominant modes?,0.75
+bode/000039.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+nichols/000040.png,What type of plot is shown?,Nichols Chart
+nichols/000040.png,Is the dynamic system stable?,Yes
+nichols/000040.png,How many poles are present in the system transfer function?,2
+nichols/000040.png,How many finite zeros are present in the transfer function?,1
+nichols/000040.png,Is the system minimum-phase?,Yes
+nichols/000040.png,What is the estimated gain margin of the system?,Infinity
+nichols/000040.png,What is the estimated phase margin of the system?,Infinite / Unbounded
+nichols/000040.png,What is the gain crossover frequency?,None
+nichols/000040.png,What is the phase crossover frequency?,None
+nichols/000040.png,Does the magnitude response exhibit a resonant peak?,Yes
+nichols/000040.png,What is the resonance peak magnitude?,-13.2 dB
+nichols/000040.png,What dynamic order best describes the underlying system?,Second-order system
+nichols/000040.png,What is the approximate damping ratio (zeta) of the dominant modes?,0.73
+nichols/000040.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+polar/000041.png,What type of plot is shown?,Polar
+polar/000041.png,Is the dynamic system stable?,Yes
+polar/000041.png,How many poles are present in the system transfer function?,2
+polar/000041.png,How many finite zeros are present in the transfer function?,0
+polar/000041.png,Is the system minimum-phase?,Yes
+polar/000041.png,What is the estimated gain margin of the system?,63.6 dB
+polar/000041.png,What is the estimated phase margin of the system?,57.0 deg
+polar/000041.png,What is the gain crossover frequency?,20.73 rad/s
+polar/000041.png,What is the phase crossover frequency?,1000.00 rad/s
+polar/000041.png,Does the magnitude response exhibit a resonant peak?,No
+polar/000041.png,What is the resonance peak magnitude?,No resonant peak
+polar/000041.png,What dynamic order best describes the underlying system?,Second-order system
+polar/000041.png,What is the approximate damping ratio (zeta) of the dominant modes?,1.63
+polar/000041.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+sfra/000042.png,What type of plot is shown?,Sweep Frequency Response Analysis (SFRA)
+sfra/000042.png,Is the dynamic system stable?,Yes
+sfra/000042.png,How many poles are present in the system transfer function?,6
+sfra/000042.png,How many finite zeros are present in the transfer function?,4
+sfra/000042.png,Is the system minimum-phase?,Yes
+sfra/000042.png,What is the estimated gain margin of the system?,Infinity
+sfra/000042.png,What is the estimated phase margin of the system?,Infinite / Unbounded
+sfra/000042.png,What is the gain crossover frequency?,None
+sfra/000042.png,What is the phase crossover frequency?,None
+sfra/000042.png,Does the magnitude response exhibit a resonant peak?,Yes
+sfra/000042.png,What is the resonance peak magnitude?,-134.5 dB
+sfra/000042.png,What dynamic order best describes the underlying system?,Transformer winding ladder network
+sfra/000042.png,What is the approximate damping ratio (zeta) of the dominant modes?,0.05
+sfra/000042.png,Does the response indicate transformer structural degradation or high-frequency deformation?,"Yes, localized resonant shifts are present"
+polar/000043.png,What type of plot is shown?,Polar
+polar/000043.png,Is the dynamic system stable?,Yes
+polar/000043.png,How many poles are present in the system transfer function?,4
+polar/000043.png,How many finite zeros are present in the transfer function?,0
+polar/000043.png,Is the system minimum-phase?,Yes
+polar/000043.png,What is the estimated gain margin of the system?,54.8 dB
+polar/000043.png,What is the estimated phase margin of the system?,Infinite / Unbounded
+polar/000043.png,What is the gain crossover frequency?,None
+polar/000043.png,What is the phase crossover frequency?,7.94 rad/s
+polar/000043.png,Does the magnitude response exhibit a resonant peak?,No
+polar/000043.png,What is the resonance peak magnitude?,No resonant peak
+polar/000043.png,What dynamic order best describes the underlying system?,4th-order system
+polar/000043.png,What is the approximate damping ratio (zeta) of the dominant modes?,0.52
+polar/000043.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+sfra/000044.png,What type of plot is shown?,Sweep Frequency Response Analysis (SFRA)
+sfra/000044.png,Is the dynamic system stable?,Yes
+sfra/000044.png,How many poles are present in the system transfer function?,2
+sfra/000044.png,How many finite zeros are present in the transfer function?,0
+sfra/000044.png,Is the system minimum-phase?,Yes
+sfra/000044.png,What is the estimated gain margin of the system?,59.7 dB
+sfra/000044.png,What is the estimated phase margin of the system?,75.1 deg
+sfra/000044.png,What is the gain crossover frequency?,20.35 rad/s
+sfra/000044.png,What is the phase crossover frequency?,1000.00 rad/s
+sfra/000044.png,Does the magnitude response exhibit a resonant peak?,No
+sfra/000044.png,What is the resonance peak magnitude?,No resonant peak
+sfra/000044.png,What dynamic order best describes the underlying system?,Second-order system
+sfra/000044.png,What is the approximate damping ratio (zeta) of the dominant modes?,2.01
+sfra/000044.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+polar/000045.png,What type of plot is shown?,Polar
+polar/000045.png,Is the dynamic system stable?,Yes
+polar/000045.png,How many poles are present in the system transfer function?,4
+polar/000045.png,How many finite zeros are present in the transfer function?,2
+polar/000045.png,Is the system minimum-phase?,No
+polar/000045.png,What is the estimated gain margin of the system?,24.7 dB
+polar/000045.png,What is the estimated phase margin of the system?,Infinite / Unbounded
+polar/000045.png,What is the gain crossover frequency?,None
+polar/000045.png,What is the phase crossover frequency?,6.13 rad/s
+polar/000045.png,Does the magnitude response exhibit a resonant peak?,Yes
+polar/000045.png,What is the resonance peak magnitude?,-23.6 dB
+polar/000045.png,What dynamic order best describes the underlying system?,4th-order system
+polar/000045.png,What is the approximate damping ratio (zeta) of the dominant modes?,0.38
+polar/000045.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+inverse_nyquist/000046.png,What type of plot is shown?,Inverse Nyquist
+inverse_nyquist/000046.png,Is the dynamic system stable?,Yes
+inverse_nyquist/000046.png,How many poles are present in the system transfer function?,1
+inverse_nyquist/000046.png,How many finite zeros are present in the transfer function?,1
+inverse_nyquist/000046.png,Is the system minimum-phase?,Yes
+inverse_nyquist/000046.png,What is the estimated gain margin of the system?,Infinity
+inverse_nyquist/000046.png,What is the estimated phase margin of the system?,Infinite / Unbounded
+inverse_nyquist/000046.png,What is the gain crossover frequency?,None
+inverse_nyquist/000046.png,What is the phase crossover frequency?,None
+inverse_nyquist/000046.png,Does the magnitude response exhibit a resonant peak?,Yes
+inverse_nyquist/000046.png,What is the resonance peak magnitude?,13.2 dB
+inverse_nyquist/000046.png,What dynamic order best describes the underlying system?,First-order system
+inverse_nyquist/000046.png,What is the approximate damping ratio (zeta) of the dominant modes?,1.0
+inverse_nyquist/000046.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+nichols/000047.png,What type of plot is shown?,Nichols Chart
+nichols/000047.png,Is the dynamic system stable?,Yes
+nichols/000047.png,How many poles are present in the system transfer function?,6
+nichols/000047.png,How many finite zeros are present in the transfer function?,4
+nichols/000047.png,Is the system minimum-phase?,Yes
+nichols/000047.png,What is the estimated gain margin of the system?,Infinity
+nichols/000047.png,What is the estimated phase margin of the system?,Infinite / Unbounded
+nichols/000047.png,What is the gain crossover frequency?,None
+nichols/000047.png,What is the phase crossover frequency?,None
+nichols/000047.png,Does the magnitude response exhibit a resonant peak?,Yes
+nichols/000047.png,What is the resonance peak magnitude?,-134.8 dB
+nichols/000047.png,What dynamic order best describes the underlying system?,Transformer winding ladder network
+nichols/000047.png,What is the approximate damping ratio (zeta) of the dominant modes?,0.05
+nichols/000047.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+polar/000048.png,What type of plot is shown?,Polar
+polar/000048.png,Is the dynamic system stable?,Yes
+polar/000048.png,How many poles are present in the system transfer function?,3
+polar/000048.png,How many finite zeros are present in the transfer function?,0
+polar/000048.png,Is the system minimum-phase?,Yes
+polar/000048.png,What is the estimated gain margin of the system?,34.0 dB
+polar/000048.png,What is the estimated phase margin of the system?,Infinite / Unbounded
+polar/000048.png,What is the gain crossover frequency?,None
+polar/000048.png,What is the phase crossover frequency?,7.11 rad/s
+polar/000048.png,Does the magnitude response exhibit a resonant peak?,No
+polar/000048.png,What is the resonance peak magnitude?,No resonant peak
+polar/000048.png,What dynamic order best describes the underlying system?,3th-order system
+polar/000048.png,What is the approximate damping ratio (zeta) of the dominant modes?,0.49
+polar/000048.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+bode/000049.png,What type of plot is shown?,Bode
+bode/000049.png,Is the dynamic system stable?,Yes
+bode/000049.png,How many poles are present in the system transfer function?,6
+bode/000049.png,How many finite zeros are present in the transfer function?,4
+bode/000049.png,Is the system minimum-phase?,Yes
+bode/000049.png,What is the estimated gain margin of the system?,Infinity
+bode/000049.png,What is the estimated phase margin of the system?,Infinite / Unbounded
+bode/000049.png,What is the gain crossover frequency?,None
+bode/000049.png,What is the phase crossover frequency?,None
+bode/000049.png,Does the magnitude response exhibit a resonant peak?,Yes
+bode/000049.png,What is the resonance peak magnitude?,-135.1 dB
+bode/000049.png,What dynamic order best describes the underlying system?,Transformer winding ladder network
+bode/000049.png,What is the approximate damping ratio (zeta) of the dominant modes?,0.05
+bode/000049.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated
+bode/000050.png,What type of plot is shown?,Bode
+bode/000050.png,Is the dynamic system stable?,Yes
+bode/000050.png,How many poles are present in the system transfer function?,6
+bode/000050.png,How many finite zeros are present in the transfer function?,4
+bode/000050.png,Is the system minimum-phase?,Yes
+bode/000050.png,What is the estimated gain margin of the system?,Infinity
+bode/000050.png,What is the estimated phase margin of the system?,Infinite / Unbounded
+bode/000050.png,What is the gain crossover frequency?,None
+bode/000050.png,What is the phase crossover frequency?,None
+bode/000050.png,Does the magnitude response exhibit a resonant peak?,Yes
+bode/000050.png,What is the resonance peak magnitude?,-134.2 dB
+bode/000050.png,What dynamic order best describes the underlying system?,Transformer winding ladder network
+bode/000050.png,What is the approximate damping ratio (zeta) of the dominant modes?,0.05
+bode/000050.png,Does the response indicate transformer structural degradation or high-frequency deformation?,No structural fault indicated

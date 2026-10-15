@@ -1,6 +1,10 @@
+from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv()
+env_path = Path(__file__).resolve().parent / ".env"
+if env_path.exists():
+    load_dotenv(dotenv_path=env_path)
+
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -17,6 +21,9 @@ with engine.begin() as conn:
     cols = [r[1] for r in conn.execute(text("PRAGMA table_info(fra_results)")).fetchall()]
     if "created_at" not in cols:
         conn.execute(text("ALTER TABLE fra_results ADD COLUMN created_at DATETIME"))
+    if "user_id" not in cols:
+        conn.execute(text("ALTER TABLE fra_results ADD COLUMN user_id INTEGER DEFAULT 1"))
+
 
 app = FastAPI(title="IntelliFRA API", version="0.1.0")
 

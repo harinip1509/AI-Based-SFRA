@@ -13,12 +13,19 @@ from database import get_db
 from models import User
 
 
+from pathlib import Path
+from dotenv import load_dotenv
+
+env_file = Path(__file__).resolve().parent / ".env"
+if env_file.exists():
+    load_dotenv(dotenv_path=env_file)
+
+
 # ================= CONFIG =================
-SECRET_KEY = os.getenv("SECRET_KEY")
-if not SECRET_KEY:
-    raise Exception("SECRET_KEY not set")
+SECRET_KEY = os.getenv("SECRET_KEY", "intellifra-default-jwt-secret-key-change-in-prod")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24h
+
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 bearer_scheme = HTTPBearer(auto_error=False)

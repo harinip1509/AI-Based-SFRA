@@ -1,0 +1,12 @@
+{
+  "num_runs": 1000,
+  "device": "cpu",
+  "cnn_latency_mean_ms": 0.2175555389985675,
+  "cnn_latency_median_ms": 0.21212499996181577,
+  "cnn_latency_p95_ms": 0.24697259950698935,
+  "cnn_latency_std_ms": 0.05290383155638183,
+  "pipeline_latency_mean_ms": 0.274020423012189,
+  "pipeline_latency_median_ms": 0.2682710000954103,
+  "pipeline_latency_p95_ms": 0.30459199988399627,
+  "pipeline_latency_std_ms": 0.06617981175176292
+}

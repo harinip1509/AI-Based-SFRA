@@ -1,5 +1,5 @@
 import { Canvas } from '@react-three/fiber'
-import { Suspense, useEffect, useRef } from 'react'
+import { Suspense, useEffect, useRef, useState } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import WaveScene from './WaveScene'
@@ -38,9 +38,24 @@ export default function Hero() {
     return () => window.removeEventListener('mousemove', onMove)
   }, [])
 
+  const [metrics, setMetrics] = useState({ accuracy: '94.4%', latency: '1.2ms' })
+
+  useEffect(() => {
+    fetch('/api/fra/metrics')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.cnn_val_accuracy) {
+          const acc = (data.cnn_val_accuracy * 100).toFixed(1) + '%'
+          const lat = (data.mean_latency_ms || 1.2).toFixed(1) + 'ms'
+          setMetrics({ accuracy: acc, latency: lat })
+        }
+      })
+      .catch(() => {})
+  }, [])
+
   const stats = [
-    { val: '99.2%', label: 'Detection Accuracy' },
-    { val: '<2ms',  label: 'Inference Latency'  },
+    { val: metrics.accuracy, label: 'Detection Accuracy' },
+    { val: metrics.latency,  label: 'Inference Latency'  },
     { val: '500+',  label: 'Assets Monitored'   },
   ]
 

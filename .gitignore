@@ -23,7 +23,10 @@ backend/intellifra.db
 
 # Large generated training data (regenerate locally)
 backend/data/fra_dataset.csv
+backend/data/held_out_test.csv
+backend/data/control_vision_qa/images/
 *.csv.bak
+
 
 # Build / cache
 dist/

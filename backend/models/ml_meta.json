@@ -5,9 +5,20 @@
     "Moderate Fault",
     "High Fault Risk"
   ],
-  "mean": 5.691773891448975,
-  "std": 4.625913189483643,
-  "ae_threshold": 0.02253034152090548,
-  "cnn_val_accuracy": 0.9441,
-  "ae_val_accuracy": 0.9847
+  "archetypes": [
+    "NF",
+    "DLF",
+    "CLF",
+    "RDF",
+    "IDF",
+    "SCF"
+  ],
+  "ae_threshold": 0.2049972265958786,
+  "cnn_val_accuracy": 0.8103333333333333,
+  "cnn_val_accuracy_std": 0.01598262945964915,
+  "cnn_macro_f1": 0.8234162119903161,
+  "held_out_accuracy": 0.56875,
+  "mean_latency_ms": 0.274020423012189,
+  "p95_latency_ms": 0.30459199988399627,
+  "false_alarm_rate": 0.02
 }

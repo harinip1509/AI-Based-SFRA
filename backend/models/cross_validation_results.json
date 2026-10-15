@@ -1,0 +1,31 @@
+{
+  "1D_CNN": {
+    "accuracy_mean": 0.8103333333333333,
+    "accuracy_std": 0.01598262945964915,
+    "f1_macro_mean": 0.8234162119903161,
+    "f1_macro_std": 0.014861621682553613
+  },
+  "SVM_RBF": {
+    "accuracy_mean": 0.66125,
+    "accuracy_std": 0.011398708503841807,
+    "f1_macro_mean": 0.6218675791444457
+  },
+  "Random_Forest": {
+    "accuracy_mean": 0.7256666666666668,
+    "accuracy_std": 0.01281708928648692,
+    "f1_macro_mean": 0.7235439026285249
+  },
+  "Plain_MLP": {
+    "accuracy_mean": 0.6495,
+    "accuracy_std": 0.010015266125049063,
+    "f1_macro_mean": 0.642876010898728
+  },
+  "per_archetype_mean_accuracy": {
+    "NF": 0.807,
+    "DLF": 0.7602391220893865,
+    "CLF": 0.8248345993086617,
+    "RDF": 0.6032099078514266,
+    "IDF": 0.9203249327014419,
+    "SCF": 0.9465
+  }
+}

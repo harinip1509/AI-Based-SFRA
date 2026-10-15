@@ -1,0 +1,8 @@
+{
+  "num_samples": 2400,
+  "cnn_accuracy": 0.56875,
+  "cnn_macro_f1": 0.5038200182042695,
+  "svm_accuracy": 0.5083333333333333,
+  "rf_accuracy": 0.5120833333333333,
+  "mlp_accuracy": 0.49333333333333335
+}

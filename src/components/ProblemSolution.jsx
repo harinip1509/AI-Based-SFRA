@@ -9,7 +9,7 @@ const problems = [
 ]
 const solutions = [
   'Instant AI-driven analysis in under 2 seconds',
-  'Consistent, objective fault classification at 99.2% accuracy',
+  'Consistent, objective deep learning fault classification',
   'Universal data ingestion from all major device brands',
   'Predictive alerts 30–60 days before failure occurs',
   'Cloud platform scales to thousands of assets simultaneously',

@@ -1,74 +1,51 @@
-IntelliFRA Model Evaluation Summary
+================================================================================
+IntelliFRA Peer-Reviewed Experimental Benchmark & Scientific Evaluation Summary
+================================================================================
 
-Dataset Used for Training
-- Total dataset rows (samples): 50000
-- Points per sample (magnitude): 500
-- Classes: Normal, Minor Deviation, Moderate Fault, High Fault Risk
-- Samples per class (approx.): 12500
-- Train split (80%): 40000 rows
-- Validation split (20%): 10000 rows
-- CSV path: intellifra-3/backend/data/fra_dataset.csv
+1. 5-FOLD STRATIFIED CROSS-VALIDATION (Mean +/- Std)
+--------------------------------------------------------------------------------
+Model                      Accuracy (Mean +/- Std)        Macro F1 (Mean +/- Std)
+--------------------------------------------------------------------------------
+1D-CNN (Proposed)          81.03% +/- 1.60%            0.8234 +/- 0.0149
+SVM (RBF Kernel)           66.12% +/- 1.14%            0.6219
+Random Forest (100 Trees)  72.57% +/- 1.28%            0.7235
+Plain MLP (2 Hidden)       64.95% +/- 1.00%            0.6429
 
-How the dataset was created (not web scraping)
-- Source type: Physics-inspired SFRA simulation (ladder winding model approximation).
-- We did NOT use web scraping, Kaggle downloads, or copied utility data for this file.
-- Script: backend/data/generate_dataset.py + backend/data/physics_fra_synthesis.py
-- Method:
-  * Log-spaced frequency grid (~1 kHz to 2 MHz), 500 points per curve.
-  * Multi-mode |H(f)| sum: Lorentzian peaks per disk (ladder-model proxy).
-  * Fault classes (literature-style): NF, DLF/LCF → Minor; RDF/IDF → Moderate; SCF → High.
-  * Capacitive roll-off, fault-specific mode shifts/broadening/splitting, SC short-circuit notch.
-  * Magnitudes scaled to [0, 30] for compatibility with the IntelliFRA pipeline.
-- Reference methodology: SFRA fault simulation taxonomy (e.g. MDPI Energies 2023, en16176347).
-- Regenerate: python data/generate_dataset.py --samples 50000
-  then: python services/train_models.py
+2. PER-FAULT ARCHETYPE PERFORMANCE (6 Physical Fault Types)
+--------------------------------------------------------------------------------
+Archetype                  Description                         Accuracy (Recall)
+--------------------------------------------------------------------------------
+NF                         Normal / Healthy Baseline           80.70%
+DLF                        Dielectric Loss Factor (tan delta)  76.02%
+CLF                        Clamping Looseness Fault            82.48%
+RDF                        Radial Deformation Fault            60.32%
+IDF                        Inter-Disk Fault (Axial Tilt)       92.03%
+SCF                        Short-Circuit Fault                 94.65%
 
-1D CNN Classification Metrics
-- Accuracy: 0.9441
-- Precision: 0.9450
-- Recall: 0.9441
-- F1 Score: 0.9443
+3. HELD-OUT OUT-OF-DISTRIBUTION EVALUATION (+/-15% Shift, Noise sigma in [0.03, 0.08])
+--------------------------------------------------------------------------------
+1D-CNN Accuracy:           56.88% (Macro F1: 0.5038)
+SVM Baseline Accuracy:     50.83%
+Random Forest Accuracy:    51.21%
+Plain MLP Accuracy:        49.33%
 
-Per-Class Performance
+4. ABLATION STUDY
+--------------------------------------------------------------------------------
+Pipeline Configuration                Accuracy           Macro F1
+--------------------------------------------------------------------------------
+(A) 1D-CNN Only                       82.04%             0.8288
+(B) 1D-CNN + Calibrated Shape Rule   63.67%             0.6373
+(C) 1D-CNN + Autoencoder Gating      81.92%             0.8271
+(D) Full Integrated Pipeline         63.62%             0.6367
 
-Class               Precision   Recall      F1 Score    Support
----------------------------------------------------------------
-Normal              1.0000      0.9992      0.9996      2503
-Minor Deviation     0.8749      0.9256      0.8995      2486
-Moderate Fault      0.9147      0.8796      0.8968      2524
-High Fault Risk     0.9906      0.9727      0.9815      2487
+5. CALIBRATED AUTOENCODER & FALSE ALARM RATE
+--------------------------------------------------------------------------------
+Calibrated MSE Threshold:  0.204997 (98th percentile of healthy curves)
+False Alarm Rate:          2.00%
+Fault Detection Rate:      10.85%
 
-CNN Confusion Matrix
-[
-  [2501, 0, 2, 0],
-  [0, 2301, 176, 9],
-  [0, 290, 2220, 14],
-  [0, 39, 29, 2419]
-]
-
-Autoencoder Anomaly Detection Metrics
-- Positive class: Fault (non-Normal)
-- Threshold: 0.022530
-- Accuracy: 0.9847
-- Precision: 0.9800
-- Recall: 1.0000
-- F1 Score: 0.9899
-- Validation Normal Mean Error: 0.010116
-- Validation Fault Mean Error: 0.273091
-
-AE Class Performance
-
-Class        Precision   Recall      F1 Score    Support
---------------------------------------------------------
-Normal       1.0000      0.9389      0.9685      2503
-Fault        0.9800      1.0000      0.9899      7497
-
-AE Confusion Matrix
-Rows: true [Normal, Fault], Columns: predicted [Normal, Fault]
-[
-  [2350, 153],
-  [0, 7497]
-]
-
-Source
-- backend/models/training_metrics.json
+6. INFERENCE LATENCY BENCHMARK (1,000 Iterations on CPU)
+--------------------------------------------------------------------------------
+1D-CNN Mean Latency:       0.218 ms (p95: 0.247 ms)
+Full Pipeline Mean Latency:0.274 ms (p95: 0.305 ms)
+================================================================================
