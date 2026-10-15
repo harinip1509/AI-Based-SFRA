@@ -177,7 +177,7 @@ def build_8page_paper(template_file: Path, output_file: Path):
         if len(h.paragraphs) >= 2:
             p_hdr1 = h.paragraphs[1]
             if len(p_hdr1.runs) >= 1:
-                p_hdr1.runs[0].text = "Harini Panigrahi et.al., "
+                p_hdr1.runs[0].text = "Harini Panigrahi "
 
     # -------------------------------------------------------------
     # 2. Section 0: Title, Authors, Abstract & Keywords Box
@@ -435,10 +435,10 @@ def build_8page_paper(template_file: Path, output_file: Path):
 
     # Eq (1): fn
     eq1_xml = (
-        '<m:r><m:t>f</m:t></m:r><m:sSub><m:e/><m:sub><m:r><m:t>n</m:t></m:r></m:sub></m:sSub><m:r><m:t>=</m:t></m:r>'
-        '<m:f><m:num><m:r><m:t>log₁₀(f)-log₁₀(F</m:t></m:r><m:sSub><m:e/><m:sub><m:r><m:t>min</m:t></m:r></m:sub></m:sSub><m:r><m:t>)</m:t></m:r></m:num>'
-        '<m:den><m:r><m:t>log₁₀(F</m:t></m:r><m:sSub><m:e/><m:sub><m:r><m:t>max</m:t></m:r></m:sub></m:sSub><m:r><m:t>)-log₁₀(F</m:t></m:r><m:sSub><m:e/><m:sub><m:r><m:t>min</m:t></m:r></m:sub></m:sSub><m:r><m:t>)</m:t></m:r></m:den></m:f>'
-        '<m:r><m:t>,  0≤f</m:t></m:r><m:sSub><m:e/><m:sub><m:r><m:t>n</m:t></m:r></m:sub></m:sSub><m:r><m:t>≤1</m:t></m:r>'
+        '<m:sSub><m:e><m:r><m:t>f</m:t></m:r></m:e><m:sub><m:r><m:t>n</m:t></m:r></m:sub></m:sSub><m:r><m:t>=</m:t></m:r>'
+        '<m:f><m:num><m:r><m:t>log₁₀(f)-log₁₀(</m:t></m:r><m:sSub><m:e><m:r><m:t>F</m:t></m:r></m:e><m:sub><m:r><m:t>min</m:t></m:r></m:sub></m:sSub><m:r><m:t>)</m:t></m:r></m:num>'
+        '<m:den><m:r><m:t>log₁₀(</m:t></m:r><m:sSub><m:e><m:r><m:t>F</m:t></m:r></m:e><m:sub><m:r><m:t>max</m:t></m:r></m:sub></m:sSub><m:r><m:t>)-log₁₀(</m:t></m:r><m:sSub><m:e><m:r><m:t>F</m:t></m:r></m:e><m:sub><m:r><m:t>min</m:t></m:r></m:sub></m:sSub><m:r><m:t>)</m:t></m:r></m:den></m:f>'
+        '<m:r><m:t>,  0≤</m:t></m:r><m:sSub><m:e><m:r><m:t>f</m:t></m:r></m:e><m:sub><m:r><m:t>n</m:t></m:r></m:sub></m:sSub><m:r><m:t>≤1</m:t></m:r>'
     )
     p_eq1 = create_omml_equation(doc, eq1_xml, "(1)")
     cursor = insert_after(cursor, p_eq1)
@@ -452,17 +452,17 @@ def build_8page_paper(template_file: Path, output_file: Path):
 
     # Eq (2): Li(fn)
     eq2_xml = (
-        '<m:r><m:t>L</m:t></m:r><m:sSub><m:e/><m:sub><m:r><m:t>i</m:t></m:r></m:sub></m:sSub><m:r><m:t>(f</m:t></m:r><m:sSub><m:e/><m:sub><m:r><m:t>n</m:t></m:r></m:sub></m:sSub><m:r><m:t>)=</m:t></m:r>'
-        '<m:f><m:num><m:r><m:t>a</m:t></m:r><m:sSub><m:e/><m:sub><m:r><m:t>i</m:t></m:r></m:sub></m:sSub></m:num>'
-        '<m:den><m:r><m:t>1+(</m:t></m:r><m:f><m:num><m:r><m:t>f</m:t></m:r><m:sSub><m:e/><m:sub><m:r><m:t>n</m:t></m:r></m:sub></m:sSub><m:r><m:t>-c</m:t></m:r><m:sSub><m:e/><m:sub><m:r><m:t>i</m:t></m:r></m:sub></m:sSub></m:num><m:den><m:r><m:t>w</m:t></m:r><m:sSub><m:e/><m:sub><m:r><m:t>i</m:t></m:r></m:sub></m:sSub></m:den></m:f><m:r><m:t>)</m:t></m:r><m:sSup><m:e/><m:sup><m:r><m:t>2</m:t></m:r></m:sup></m:sSup></m:den></m:f>'
+        '<m:sSub><m:e><m:r><m:t>L</m:t></m:r></m:e><m:sub><m:r><m:t>i</m:t></m:r></m:sub></m:sSub><m:r><m:t>(</m:t></m:r><m:sSub><m:e><m:r><m:t>f</m:t></m:r></m:e><m:sub><m:r><m:t>n</m:t></m:r></m:sub></m:sSub><m:r><m:t>)=</m:t></m:r>'
+        '<m:f><m:num><m:sSub><m:e><m:r><m:t>a</m:t></m:r></m:e><m:sub><m:r><m:t>i</m:t></m:r></m:sub></m:sSub></m:num>'
+        '<m:den><m:r><m:t>1+</m:t></m:r><m:sSup><m:e><m:r><m:t>(</m:t></m:r><m:f><m:num><m:sSub><m:e><m:r><m:t>f</m:t></m:r></m:e><m:sub><m:r><m:t>n</m:t></m:r></m:sub></m:sSub><m:r><m:t>-</m:t></m:r><m:sSub><m:e><m:r><m:t>c</m:t></m:r></m:e><m:sub><m:r><m:t>i</m:t></m:r></m:sub></m:sSub></m:num><m:den><m:sSub><m:e><m:r><m:t>w</m:t></m:r></m:e><m:sub><m:r><m:t>i</m:t></m:r></m:sub></m:sSub></m:den></m:f><m:r><m:t>)</m:t></m:r></m:e><m:sup><m:r><m:t>2</m:t></m:r></m:sup></m:sSup></m:den></m:f>'
     )
     p_eq2 = create_omml_equation(doc, eq2_xml, "(2)")
     cursor = insert_after(cursor, p_eq2)
 
     # Eq (3): wi
     eq3_xml = (
-        '<m:r><m:t>w</m:t></m:r><m:sSub><m:e/><m:sub><m:r><m:t>i</m:t></m:r></m:sub></m:sSub><m:r><m:t>=max(0.008, </m:t></m:r>'
-        '<m:f><m:num><m:r><m:t>0.12</m:t></m:r></m:num><m:den><m:r><m:t>max(Q</m:t></m:r><m:sSub><m:e/><m:sub><m:r><m:t>i</m:t></m:r></m:sub></m:sSub><m:r><m:t>, 0.5)</m:t></m:r></m:den></m:f><m:r><m:t>)</m:t></m:r>'
+        '<m:sSub><m:e><m:r><m:t>w</m:t></m:r></m:e><m:sub><m:r><m:t>i</m:t></m:r></m:sub></m:sSub><m:r><m:t>=max(0.008, </m:t></m:r>'
+        '<m:f><m:num><m:r><m:t>0.12</m:t></m:r></m:num><m:den><m:r><m:t>max(</m:t></m:r><m:sSub><m:e><m:r><m:t>Q</m:t></m:r></m:e><m:sub><m:r><m:t>i</m:t></m:r></m:sub></m:sSub><m:r><m:t>, 0.5)</m:t></m:r></m:den></m:f><m:r><m:t>)</m:t></m:r>'
     )
     p_eq3 = create_omml_equation(doc, eq3_xml, "(3)")
     cursor = insert_after(cursor, p_eq3)
@@ -476,9 +476,10 @@ def build_8page_paper(template_file: Path, output_file: Path):
 
     # Eq (4): H(fn)
     eq4_xml = (
-        '<m:r><m:t>|H(f</m:t></m:r><m:sSub><m:e/><m:sub><m:r><m:t>n</m:t></m:r></m:sub></m:sSub><m:r><m:t>)|=[</m:t></m:r>'
-        '<m:nary><m:naryPr><m:chr m:val="∑"/><m:limLoc m:val="undOvr"/></m:naryPr><m:sub><m:r><m:t>i=1</m:t></m:r></m:sub><m:sup><m:r><m:t>N</m:t></m:r><m:sSub><m:e/><m:sub><m:r><m:t>m</m:t></m:r></m:sub></m:sSub></m:sup><m:e><m:r><m:t>L</m:t></m:r><m:sSub><m:e/><m:sub><m:r><m:t>i</m:t></m:r></m:sub></m:sSub><m:r><m:t>(f</m:t></m:r><m:sSub><m:e/><m:sub><m:r><m:t>n</m:t></m:r></m:sub></m:sSub><m:r><m:t>)</m:t></m:r></m:e></m:nary>'
-        '<m:r><m:t>]·exp(-α f</m:t></m:r><m:sSub><m:e/><m:sub><m:r><m:t>n</m:t></m:r></m:sub></m:sSub><m:r><m:t>)+ε</m:t></m:r>'
+        '<m:r><m:t>|H(</m:t></m:r><m:sSub><m:e><m:r><m:t>f</m:t></m:r></m:e><m:sub><m:r><m:t>n</m:t></m:r></m:sub></m:sSub><m:r><m:t>)|=[</m:t></m:r>'
+        '<m:nary><m:naryPr><m:chr m:val="∑"/><m:limLoc m:val="undOvr"/></m:naryPr><m:sub><m:r><m:t>i=1</m:t></m:r></m:sub><m:sup><m:sSub><m:e><m:r><m:t>N</m:t></m:r></m:e><m:sub><m:r><m:t>m</m:t></m:r></m:sub></m:sSub></m:sup>'
+        '<m:e><m:sSub><m:e><m:r><m:t>L</m:t></m:r></m:e><m:sub><m:r><m:t>i</m:t></m:r></m:sub></m:sSub><m:r><m:t>(</m:t></m:r><m:sSub><m:e><m:r><m:t>f</m:t></m:r></m:e><m:sub><m:r><m:t>n</m:t></m:r></m:sub></m:sSub><m:r><m:t>)</m:t></m:r></m:e></m:nary>'
+        '<m:r><m:t>]·exp(-α </m:t></m:r><m:sSub><m:e><m:r><m:t>f</m:t></m:r></m:e><m:sub><m:r><m:t>n</m:t></m:r></m:sub></m:sSub><m:r><m:t>)+ε</m:t></m:r>'
     )
     p_eq4 = create_omml_equation(doc, eq4_xml, "(4)")
     cursor = insert_after(cursor, p_eq4)
@@ -518,14 +519,14 @@ def build_8page_paper(template_file: Path, output_file: Path):
 
     # Eq (5): Z-score
     eq5_xml = (
-        '<m:r><m:t>x′</m:t></m:r><m:sSub><m:e/><m:sub><m:r><m:t>i</m:t></m:r></m:sub></m:sSub><m:r><m:t>=</m:t></m:r>'
-        '<m:f><m:num><m:r><m:t>x</m:t></m:r><m:sSub><m:e/><m:sub><m:r><m:t>i</m:t></m:r></m:sub></m:sSub><m:r><m:t>-μ</m:t></m:r></m:num><m:den><m:r><m:t>σ+ϵ</m:t></m:r></m:den></m:f>'
+        '<m:sSub><m:e><m:r><m:t>x′</m:t></m:r></m:e><m:sub><m:r><m:t>i</m:t></m:r></m:sub></m:sSub><m:r><m:t>=</m:t></m:r>'
+        '<m:f><m:num><m:sSub><m:e><m:r><m:t>x</m:t></m:r></m:e><m:sub><m:r><m:t>i</m:t></m:r></m:sub></m:sSub><m:r><m:t>-μ</m:t></m:r></m:num><m:den><m:r><m:t>σ+ϵ</m:t></m:r></m:den></m:f>'
         '<m:r><m:t>,  μ=</m:t></m:r><m:f><m:num><m:r><m:t>1</m:t></m:r></m:num><m:den><m:r><m:t>N</m:t></m:r></m:den></m:f>'
-        '<m:nary><m:naryPr><m:chr m:val="∑"/><m:limLoc m:val="undOvr"/></m:naryPr><m:sub><m:r><m:t>i=1</m:t></m:r></m:sub><m:sup><m:r><m:t>N</m:t></m:r></m:sup><m:e><m:r><m:t>x</m:t></m:r><m:sSub><m:e/><m:sub><m:r><m:t>i</m:t></m:r></m:sub></m:sSub></m:e></m:nary>'
+        '<m:nary><m:naryPr><m:chr m:val="∑"/><m:limLoc m:val="undOvr"/></m:naryPr><m:sub><m:r><m:t>i=1</m:t></m:r></m:sub><m:sup><m:r><m:t>N</m:t></m:r></m:sup><m:e><m:sSub><m:e><m:r><m:t>x</m:t></m:r></m:e><m:sub><m:r><m:t>i</m:t></m:r></m:sub></m:sSub></m:e></m:nary>'
         '<m:r><m:t>,  σ=</m:t></m:r>'
         '<m:rad><m:radPr><m:degHide m:val="1"/></m:radPr><m:deg/><m:e>'
         '<m:f><m:num><m:r><m:t>1</m:t></m:r></m:num><m:den><m:r><m:t>N</m:t></m:r></m:den></m:f>'
-        '<m:nary><m:naryPr><m:chr m:val="∑"/><m:limLoc m:val="undOvr"/></m:naryPr><m:sub><m:r><m:t>i=1</m:t></m:r></m:sub><m:sup><m:r><m:t>N</m:t></m:r></m:sup><m:e><m:r><m:t>(x</m:t></m:r><m:sSub><m:e/><m:sub><m:r><m:t>i</m:t></m:r></m:sub></m:sSub><m:r><m:t>-μ)</m:t></m:r><m:sSup><m:e/><m:sup><m:r><m:t>2</m:t></m:r></m:sup></m:sSup></m:e></m:nary>'
+        '<m:nary><m:naryPr><m:chr m:val="∑"/><m:limLoc m:val="undOvr"/></m:naryPr><m:sub><m:r><m:t>i=1</m:t></m:r></m:sub><m:sup><m:r><m:t>N</m:t></m:r></m:sup><m:e><m:sSup><m:e><m:r><m:t>(</m:t></m:r><m:sSub><m:e><m:r><m:t>x</m:t></m:r></m:e><m:sub><m:r><m:t>i</m:t></m:r></m:sub></m:sSub><m:r><m:t>-μ)</m:t></m:r></m:e><m:sup><m:r><m:t>2</m:t></m:r></m:sup></m:sSup></m:e></m:nary>'
         '</m:e></m:rad>'
     )
     p_eq5 = create_omml_equation(doc, eq5_xml, "(5)")
@@ -544,16 +545,16 @@ def build_8page_paper(template_file: Path, output_file: Path):
 
     # Eq (6): Softmax
     eq6_xml = (
-        '<m:r><m:t>p̂=softmax(f</m:t></m:r><m:sSub><m:e/><m:sub><m:r><m:t>CNN</m:t></m:r></m:sub></m:sSub><m:r><m:t>(x′)),  ŷ=argmax</m:t></m:r>'
-        '<m:sSub><m:e/><m:sub><m:r><m:t>k</m:t></m:r></m:sub></m:sSub><m:r><m:t> p̂</m:t></m:r><m:sSub><m:e/><m:sub><m:r><m:t>k</m:t></m:r></m:sub></m:sSub>'
+        '<m:r><m:t>p̂=softmax(</m:t></m:r><m:sSub><m:e><m:r><m:t>f</m:t></m:r></m:e><m:sub><m:r><m:t>CNN</m:t></m:r></m:sub></m:sSub><m:r><m:t>(x′)),  ŷ=</m:t></m:r>'
+        '<m:sSub><m:e><m:r><m:t>argmax</m:t></m:r></m:e><m:sub><m:r><m:t>k</m:t></m:r></m:sub></m:sSub><m:r><m:t> </m:t></m:r><m:sSub><m:e><m:r><m:t>p̂</m:t></m:r></m:e><m:sub><m:r><m:t>k</m:t></m:r></m:sub></m:sSub>'
     )
     p_eq6 = create_omml_equation(doc, eq6_xml, "(6)")
     cursor = insert_after(cursor, p_eq6)
 
     # Eq (7): Loss
     eq7_xml = (
-        '<m:r><m:t>ℒ</m:t></m:r><m:sSub><m:e/><m:sub><m:r><m:t>CE</m:t></m:r></m:sub></m:sSub><m:r><m:t>=-</m:t></m:r>'
-        '<m:nary><m:naryPr><m:chr m:val="∑"/><m:limLoc m:val="undOvr"/></m:naryPr><m:sub><m:r><m:t>k=1</m:t></m:r></m:sub><m:sup><m:r><m:t>4</m:t></m:r></m:sup><m:e><m:r><m:t>y</m:t></m:r><m:sSub><m:e/><m:sub><m:r><m:t>k</m:t></m:r></m:sub></m:sSub><m:r><m:t> log p̂</m:t></m:r><m:sSub><m:e/><m:sub><m:r><m:t>k</m:t></m:r></m:sub></m:sSub></m:e></m:nary>'
+        '<m:sSub><m:e><m:r><m:t>ℒ</m:t></m:r></m:e><m:sub><m:r><m:t>CE</m:t></m:r></m:sub></m:sSub><m:r><m:t>=-</m:t></m:r>'
+        '<m:nary><m:naryPr><m:chr m:val="∑"/><m:limLoc m:val="undOvr"/></m:naryPr><m:sub><m:r><m:t>k=1</m:t></m:r></m:sub><m:sup><m:r><m:t>4</m:t></m:r></m:sup><m:e><m:sSub><m:e><m:r><m:t>y</m:t></m:r></m:e><m:sub><m:r><m:t>k</m:t></m:r></m:sub></m:sSub><m:r><m:t> log </m:t></m:r><m:sSub><m:e><m:r><m:t>p̂</m:t></m:r></m:e><m:sub><m:r><m:t>k</m:t></m:r></m:sub></m:sSub></m:e></m:nary>'
     )
     p_eq7 = create_omml_equation(doc, eq7_xml, "(7)")
     cursor = insert_after(cursor, p_eq7)
@@ -590,8 +591,8 @@ def build_8page_paper(template_file: Path, output_file: Path):
     # Eq (8): Autoencoder error
     eq8_xml = (
         '<m:r><m:t>e=</m:t></m:r><m:f><m:num><m:r><m:t>1</m:t></m:r></m:num><m:den><m:r><m:t>N</m:t></m:r></m:den></m:f>'
-        '<m:nary><m:naryPr><m:chr m:val="∑"/><m:limLoc m:val="undOvr"/></m:naryPr><m:sub><m:r><m:t>i=1</m:t></m:r></m:sub><m:sup><m:r><m:t>N</m:t></m:r></m:sup><m:e><m:r><m:t>(x′</m:t></m:r><m:sSub><m:e/><m:sub><m:r><m:t>i</m:t></m:r></m:sub></m:sSub><m:r><m:t>-x̂′</m:t></m:r><m:sSub><m:e/><m:sub><m:r><m:t>i</m:t></m:r></m:sub></m:sSub><m:r><m:t>)</m:t></m:r><m:sSup><m:e/><m:sup><m:r><m:t>2</m:t></m:r></m:sup></m:sSup></m:e></m:nary>'
-        '<m:r><m:t>,  s</m:t></m:r><m:sSub><m:e/><m:sub><m:r><m:t>anom</m:t></m:r></m:sub></m:sSub><m:r><m:t>=</m:t></m:r>'
+        '<m:nary><m:naryPr><m:chr m:val="∑"/><m:limLoc m:val="undOvr"/></m:naryPr><m:sub><m:r><m:t>i=1</m:t></m:r></m:sub><m:sup><m:r><m:t>N</m:t></m:r></m:sup><m:e><m:sSup><m:e><m:r><m:t>(</m:t></m:r><m:sSub><m:e><m:r><m:t>x′</m:t></m:r></m:e><m:sub><m:r><m:t>i</m:t></m:r></m:sub></m:sSub><m:r><m:t>-</m:t></m:r><m:sSub><m:e><m:r><m:t>x̂′</m:t></m:r></m:e><m:sub><m:r><m:t>i</m:t></m:r></m:sub></m:sSub><m:r><m:t>)</m:t></m:r></m:e><m:sup><m:r><m:t>2</m:t></m:r></m:sup></m:sSup></m:e></m:nary>'
+        '<m:r><m:t>,  </m:t></m:r><m:sSub><m:e><m:r><m:t>s</m:t></m:r></m:e><m:sub><m:r><m:t>anom</m:t></m:r></m:sub></m:sSub><m:r><m:t>=</m:t></m:r>'
         '<m:f><m:num><m:r><m:t>e</m:t></m:r></m:num><m:den><m:r><m:t>τ+ϵ</m:t></m:r></m:den></m:f>'
     )
     p_eq8 = create_omml_equation(doc, eq8_xml, "(8)")
@@ -619,10 +620,10 @@ def build_8page_paper(template_file: Path, output_file: Path):
     # Eq (9): CC
     eq9_xml = (
         '<m:r><m:t>CC(X, Y)=</m:t></m:r>'
-        '<m:f><m:num><m:nary><m:naryPr><m:chr m:val="∑"/><m:limLoc m:val="undOvr"/></m:naryPr><m:sub><m:r><m:t>i=1</m:t></m:r></m:sub><m:sup><m:r><m:t>N</m:t></m:r></m:sup><m:e><m:r><m:t>(X</m:t></m:r><m:sSub><m:e/><m:sub><m:r><m:t>i</m:t></m:r></m:sub></m:sSub><m:r><m:t>-X̄)(Y</m:t></m:r><m:sSub><m:e/><m:sub><m:r><m:t>i</m:t></m:r></m:sub></m:sSub><m:r><m:t>-Ȳ)</m:t></m:r></m:e></m:nary></m:num>'
+        '<m:f><m:num><m:nary><m:naryPr><m:chr m:val="∑"/><m:limLoc m:val="undOvr"/></m:naryPr><m:sub><m:r><m:t>i=1</m:t></m:r></m:sub><m:sup><m:r><m:t>N</m:t></m:r></m:sup><m:e><m:r><m:t>(</m:t></m:r><m:sSub><m:e><m:r><m:t>X</m:t></m:r></m:e><m:sub><m:r><m:t>i</m:t></m:r></m:sub></m:sSub><m:r><m:t>-X̄)(</m:t></m:r><m:sSub><m:e><m:r><m:t>Y</m:t></m:r></m:e><m:sub><m:r><m:t>i</m:t></m:r></m:sub></m:sSub><m:r><m:t>-Ȳ)</m:t></m:r></m:e></m:nary></m:num>'
         '<m:den><m:rad><m:radPr><m:degHide m:val="1"/></m:radPr><m:deg/><m:e>'
-        '<m:nary><m:naryPr><m:chr m:val="∑"/><m:limLoc m:val="undOvr"/></m:naryPr><m:sub><m:r><m:t>i=1</m:t></m:r></m:sub><m:sup><m:r><m:t>N</m:t></m:r></m:sup><m:e><m:r><m:t>(X</m:t></m:r><m:sSub><m:e/><m:sub><m:r><m:t>i</m:t></m:r></m:sub></m:sSub><m:r><m:t>-X̄)</m:t></m:r><m:sSup><m:e/><m:sup><m:r><m:t>2</m:t></m:r></m:sup></m:sSup></m:e></m:nary>'
-        '<m:nary><m:naryPr><m:chr m:val="∑"/><m:limLoc m:val="undOvr"/></m:naryPr><m:sub><m:r><m:t>i=1</m:t></m:r></m:sub><m:sup><m:r><m:t>N</m:t></m:r></m:sup><m:e><m:r><m:t>(Y</m:t></m:r><m:sSub><m:e/><m:sub><m:r><m:t>i</m:t></m:r></m:sub></m:sSub><m:r><m:t>-Ȳ)</m:t></m:r><m:sSup><m:e/><m:sup><m:r><m:t>2</m:t></m:r></m:sup></m:sSup></m:e></m:nary>'
+        '<m:nary><m:naryPr><m:chr m:val="∑"/><m:limLoc m:val="undOvr"/></m:naryPr><m:sub><m:r><m:t>i=1</m:t></m:r></m:sub><m:sup><m:r><m:t>N</m:t></m:r></m:sup><m:e><m:sSup><m:e><m:r><m:t>(</m:t></m:r><m:sSub><m:e><m:r><m:t>X</m:t></m:r></m:e><m:sub><m:r><m:t>i</m:t></m:r></m:sub></m:sSub><m:r><m:t>-X̄)</m:t></m:r></m:e><m:sup><m:r><m:t>2</m:t></m:r></m:sup></m:sSup></m:e></m:nary>'
+        '<m:nary><m:naryPr><m:chr m:val="∑"/><m:limLoc m:val="undOvr"/></m:naryPr><m:sub><m:r><m:t>i=1</m:t></m:r></m:sub><m:sup><m:r><m:t>N</m:t></m:r></m:sup><m:e><m:sSup><m:e><m:r><m:t>(</m:t></m:r><m:sSub><m:e><m:r><m:t>Y</m:t></m:r></m:e><m:sub><m:r><m:t>i</m:t></m:r></m:sub></m:sSub><m:r><m:t>-Ȳ)</m:t></m:r></m:e><m:sup><m:r><m:t>2</m:t></m:r></m:sup></m:sSup></m:e></m:nary>'
         '</m:e></m:rad></m:den></m:f>'
     )
     p_eq9 = create_omml_equation(doc, eq9_xml, "(9)")
@@ -631,7 +632,7 @@ def build_8page_paper(template_file: Path, output_file: Path):
     # Eq (10): ASLE
     eq10_xml = (
         '<m:r><m:t>ASLE=</m:t></m:r><m:f><m:num><m:r><m:t>1</m:t></m:r></m:num><m:den><m:r><m:t>N</m:t></m:r></m:den></m:f>'
-        '<m:nary><m:naryPr><m:chr m:val="∑"/><m:limLoc m:val="undOvr"/></m:naryPr><m:sub><m:r><m:t>i=1</m:t></m:r></m:sub><m:sup><m:r><m:t>N</m:t></m:r></m:sup><m:e><m:r><m:t>|20 log₁₀(X</m:t></m:r><m:sSub><m:e/><m:sub><m:r><m:t>i</m:t></m:r></m:sub></m:sSub><m:r><m:t>)-20 log₁₀(Y</m:t></m:r><m:sSub><m:e/><m:sub><m:r><m:t>i</m:t></m:r></m:sub></m:sSub><m:r><m:t>)|</m:t></m:r></m:e></m:nary>'
+        '<m:nary><m:naryPr><m:chr m:val="∑"/><m:limLoc m:val="undOvr"/></m:naryPr><m:sub><m:r><m:t>i=1</m:t></m:r></m:sub><m:sup><m:r><m:t>N</m:t></m:r></m:sup><m:e><m:r><m:t>|20 log₁₀(</m:t></m:r><m:sSub><m:e><m:r><m:t>X</m:t></m:r></m:e><m:sub><m:r><m:t>i</m:t></m:r></m:sub></m:sSub><m:r><m:t>)-20 log₁₀(</m:t></m:r><m:sSub><m:e><m:r><m:t>Y</m:t></m:r></m:e><m:sub><m:r><m:t>i</m:t></m:r></m:sub></m:sSub><m:r><m:t>)|</m:t></m:r></m:e></m:nary>'
     )
     p_eq10 = create_omml_equation(doc, eq10_xml, "(10)")
     cursor = insert_after(cursor, p_eq10)
