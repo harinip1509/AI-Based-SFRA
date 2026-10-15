@@ -235,7 +235,7 @@ def build_manuscript(template_file: Path, output_file: Path):
     p2.runs[9].text = ", "
     p2.runs[10].text = "Neha Verma¹"
     p2.runs[12].text = ", "
-    p2.runs[13].text = "Bhanu Tekwani¹*"
+    p2.runs[13].text = "Bhanu Tekwani¹"
     p2.runs[14].text = ""
     p2.runs[15].text = ""
     p2.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -255,16 +255,13 @@ def build_manuscript(template_file: Path, output_file: Path):
 
     p4 = p_orig[4]
     p4.text = ""
-    p4.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p4.paragraph_format.space_before = Pt(2)
-    p4.paragraph_format.space_after = Pt(8)
-    r4 = p4.add_run(
-        "*Corresponding Author: Dr. Bhanu Tekwani, Department of Information Technology, Vidyalankar Institute of Technology, Vidyalankar College Road, Wadala (East), Mumbai 400037, Maharashtra, India. E-mail: bhanu.tekwani@vit.edu.in; Tel: +91-22-24161126; Fax: +91-22-24161126.\n"
-        "Co-authors: {harini.panigrahi, yooraj.gole, prapti.bhayde, neha.verma}@vit.edu.in. ORCID: H. Panigrahi (0009-0002-4112-984X), Y. Gole (0009-0005-2311-8971), P. Bhayde (0009-0008-6541-2309), N. Verma (0009-0001-8723-5460), B. Tekwani (0000-0002-8412-3491)."
-    )
-    r4.font.name = "Times New Roman"
-    r4.font.size = Pt(9.5)
-    r4.font.italic = True
+    # Strip any list numbering so no '1. ' appears
+    p4_pPr = p4._p.get_or_add_pPr()
+    numPr = p4_pPr.find(qn("w:numPr"))
+    if numPr is not None:
+        p4_pPr.remove(numPr)
+    p4.paragraph_format.space_before = Pt(0)
+    p4.paragraph_format.space_after = Pt(0)
 
     # Table 0: Light Blue Shaded Box (Abstract & Keywords)
     cell_abs = t_abs.cell(0, 0)
@@ -416,105 +413,29 @@ def build_manuscript(template_file: Path, output_file: Path):
     # Start cursor after p_orig[17]
     cursor = p_orig[17]._p
 
-    # --- 1.2 Literature Survey ---
-    p_ls1 = create_heading2(doc, "1.2 Literature Survey")
-    cursor = insert_after(cursor, p_ls1)
-    p_ls2 = create_body_paragraph(
-        doc,
-        "The scientific foundation of Frequency Response Analysis dates back to seminal investigations by Dick and Erven in 1978, who demonstrated that "
-        "mechanical displacements alter internal winding capacitance and leakage inductance matrices [1]. Subsequent international standardization by the IEEE "
-        "Power and Energy Society (IEEE Std C57.149-2012) and the International Electrotechnical Commission (IEC 60076-18) codified measurement protocols, cable "
-        "grounding braid configurations, and standardized frequency limits [5], [6]. In contemporary utility maintenance practice, SFRA interpretation remains "
-        "predominantly comparative. Asset managers compare an active field sweep against a historical baseline (obtained during factory acceptance testing), "
-        "a sister unit of identical design, or an opposing symmetrical phase on the same transformer core [7], [8].\n\n"
-        "To eliminate subjective human bias, mathematical similarity indices have been standardized, including the Cross-Correlation Coefficient (CC), Absolute "
-        "Sum of Logarithmic Error (ASLE), Standard Deviation (SD), and Euclidean Distance (ED) [9]-[11]. While standardized, numerical indices condense broad "
-        "spectral intervals into scalar numbers, failing to identify whether a deviation stems from harmless test lead repositioning, oil moisture variation, "
-        "or severe mechanical collapse [12]. Over the past decade, machine learning algorithms have been explored to automate classification. Support Vector "
-        "Machines (SVM) were deployed by Bigdeli et al. [13] and Zhao et al. [14] using extracted statistical features. Tahir and Tenbohlen [15], [16] benchmarked "
-        "shallow Artificial Neural Networks (ANN) and Random Forests across 139 physical transformer measurements, reaching 93% classification accuracy on curated "
-        "datasets. However, shallow machine learning requires laborious manual feature extraction that fails to capture subtle multi-resonant peak splittings.\n\n"
-        "To bypass manual feature engineering, recent studies converted 1D SFRA traces into 2D representations, including binary image matrices [17], Continuous "
-        "Wavelet Transform (CWT) scalograms [18], and recurrence plots [19] for classification using 2D Convolutional Neural Networks (2D-CNNs). While effective, "
-        "transforming 1D frequency series into 2D images introduces artificial grid quantization artifacts, multiplies model parameter counts by orders of magnitude "
-        "(often exceeding 10 to 25 million parameters), and discards critical phase alignment. Direct 1D raw-vector deep learning architectures (e.g., Wang [20], "
-        "Phillip et al. [21], Duan et al. [22]) have recently demonstrated superior computational efficiency by operating directly on normalized 1D magnitude vectors."
-    )
-    cursor = insert_after(cursor, p_ls2)
-
-    # --- 1.3 Research Gaps Identified ---
-    p_rg1 = create_heading2(doc, "1.3 Research Gaps Identified")
-    cursor = insert_after(cursor, p_rg1)
-    p_rg2 = create_body_paragraph(
-        doc,
-        "Despite encouraging advances in deep learning for SFRA interpretation, an exhaustive survey of published literature reveals six fundamental scientific "
-        "and methodological shortcomings that severely undermine real-world deployment:\n"
-        "1. Circular Synthetic Data Generator Design: Because physical transformer failure records are commercially scarce and destructive testing is cost-prohibitive, "
-        "prior deep learning studies rely almost exclusively on synthetic curve generators. Crucially, legacy synthesis engines enforce artificial monotonic constraints "
-        "(e.g., forcing Normal curves to possess step-wise monotonicity). Consequently, classifiers learn the artificial generator rules rather than physical "
-        "winding electromechanics, yielding artificially perfect accuracy (F1 > 0.999) that completely collapses when exposed to real transformer traces.\n"
-        "2. Complete Absence of Comparative Baselines: Existing SFRA deep learning literature predominantly evaluates novel architectures in isolation without comparative "
-        "benchmarking against classical machine learning baselines (such as Random Forests, Support Vector Machines with RBF kernels, or Multi-Layer Perceptrons) "
-        "trained on identical data folds.\n"
-        "3. Unvalidated Heuristic Post-Filtering Overrides: Industrial condition monitoring systems frequently append deterministic heuristic shape rules to override "
-        "neural network outputs. However, published literature has never empirically measured whether these manual rules improve accuracy or actively degrade learned "
-        "convolutional representations.\n"
-        "4. Lack of Statistical Cross-Validation Rigor: Reported accuracies frequently stem from single random train-test splits under arbitrary random seeds without "
-        "k-fold cross-validation, variance bounds, or statistical confidence intervals.\n"
-        "5. Scarcity of Physical Field Validation: Models trained on synthetic benchmarks are rarely tested on full-scale physical utility power transformers operating "
-        "in active transmission substations.\n"
-        "6. Absence of Computational Latency and Edge Profiling: The literature lacks rigorous profiling of inference execution latency and computational resource "
-        "utilization, leaving their viability for embedded substation edge monitoring gateways unknown."
-    )
-    cursor = insert_after(cursor, p_rg2)
-
-    # --- 1.4 Research Problem Formulation ---
-    p_rp1 = create_heading2(doc, "1.4 Research Problem Formulation")
-    cursor = insert_after(cursor, p_rp1)
-    p_rp2 = create_body_paragraph(
-        doc,
-        "Let a measured or synthesized power transformer sweep frequency response be denoted by the continuous transfer function magnitude H(f) across the standardized "
-        "frequency band f in [Fmin, Fmax], where Fmin = 20 Hz and Fmax = 2 MHz. After logarithmic resampling to a discrete sequence x = [x1, x2, ..., xN] in R^N "
-        "(with N = 500 points), the diagnostic objective is twofold: (1) accurately map x to one of K distinct fault severity classes y in {Normal, Minor Deviation, "
-        "Moderate Fault, High Fault Risk} while maintaining robust sensitivity to six physical fault archetypes; and (2) formulate an unsupervised anomaly gating function "
-        "g(x) in {0, 1} that evaluates whether x conforms to the manifold of healthy winding physics without generating excessive false alarms on unmodeled operational noise. "
-        "The central engineering problem is to achieve this dual objective without circular monotonic synthetic shortcuts, while guaranteeing deterministic, sub-millisecond "
-        "inference execution on edge computing hardware."
-    )
-    cursor = insert_after(cursor, p_rp2)
-
-    # --- 1.5 Research Objectives and Novel Contributions ---
-    p_rc1 = create_heading2(doc, "1.5 Research Objectives and Novel Contributions")
+    # --- 1.1 Research Gaps and Novel Contributions ---
+    p_rc1 = create_heading2(doc, "1.1 Research Gaps and Contributions")
     cursor = insert_after(cursor, p_rc1)
     p_rc2 = create_body_paragraph(
         doc,
-        "To resolve the aforementioned scientific and industrial limitations, this investigation presents IntelliFRA, an open-source, fully reproducible hybrid deep learning "
-        "framework. The primary contributions of this paper are summarized as follows:\n"
-        "1. Unconstrained Distributed Ladder Network Formulation: We formulate an authentic multi-conductor ladder network that completely eliminates circular monotonic "
-        "constraints, generating realistic physical baseline curves alongside six parameterized physical failure archetypes.\n"
-        "2. Comprehensive 5-Fold Stratified Cross-Validation: We establish the first standardized benchmark on 12,000 synthesized frequency responses comparing our specialized "
-        "1D-CNN against Random Forest, Support Vector Machine (RBF kernel), and Multi-Layer Perceptron baselines on identical data splits.\n"
-        "3. Empirical Ablation Analysis of Rule-Based Overrides: We provide definitive empirical evidence that deterministic shape override rules degrade diagnostic accuracy "
-        "by -18.37%, demonstrating that end-to-end convolutional representations vastly outperform hand-crafted heuristics.\n"
-        "4. Out-of-Distribution Generalization Testing: We evaluate model robustness on a perturbed held-out dataset exhibiting ±15% resonant center drift and elevated measurement "
-        "noise, confirming 70.2% performance retention.\n"
-        "5. Open Benchmark Reference Verification: We benchmark the diagnostic framework on open-source multi-phase baseline frequency sweeps under IEEE Std C57.149-2012 criteria, confirming healthy phase symmetry (CC = 0.9847).\n"
-        "6. Sub-Millisecond Inference Latency Profiling: We demonstrate single-core CPU execution times of 0.247 ms (p95) and establish multi-tenant database isolation."
+        "Despite standardized measurement guidelines (IEEE Std C57.149-2012, IEC 60076-18), field interpretation of SFRA traces remains heavily reliant "
+        "on scalar similarity indices (such as Cross-Correlation Coefficient CC and Absolute Sum of Logarithmic Error ASLE) and shallow machine learning models [5]-[16]. "
+        "These scalar metrics condense complex multi-resonant spectra into single numbers, failing to identify fault types or localize coupled winding deformations. "
+        "Furthermore, prior deep learning models depend on synthetic curve generators enforcing artificial monotonic constraints, causing classifiers to memorize "
+        "generator artifacts rather than physical winding electrodynamics [17]-[22]. Crucially, existing literature lacks comparative benchmarks against classical ML "
+        "baselines, omits empirical quantification of heuristic override rules, and lacks sub-millisecond edge computational profiling.\n\n"
+        "To resolve these challenges, this study develops IntelliFRA, an open-source hybrid deep learning framework for automated transformer SFRA diagnosis. "
+        "The primary contributions of this paper are:\n"
+        "1. Formulation of an unconstrained physics-inspired distributed ladder winding network without artificial monotonic constraints, parameterizing six physical failure archetypes.\n"
+        "2. Comprehensive 5-fold stratified cross-validation on 12,000 synthesized frequency traces (20 Hz to 2 MHz) demonstrating that our 1D-CNN achieves 81.03% ± 1.60% accuracy, "
+        "significantly outperforming Random Forest (72.57%), SVM (66.12%), and MLP (64.95%) baselines.\n"
+        "3. Quantitative ablation demonstrating that deterministic rule overrides degrade accuracy by -18.37%, confirming that learned representations surpass hand-crafted heuristics.\n"
+        "4. Out-of-distribution evaluation under severe frequency drift (±15%) achieving 56.88% domain retention, alongside verification on open multi-phase benchmark sweeps (CC = 0.9847).\n"
+        "5. Sub-millisecond CPU latency profiling (0.247 ms p95), confirming viability for real-time edge substation monitoring.\n\n"
+        "The remainder of this article is organized as follows: Section 2 details the distributed ladder network, fault parameterization, 1D-CNN, and autoencoder architectures. "
+        "Section 3 presents 5-fold cross-validation, ablation results, out-of-distribution tests, and edge profiling. Section 4 concludes the paper."
     )
     cursor = insert_after(cursor, p_rc2)
-
-    # --- 1.6 Organization of the Paper ---
-    p_org1 = create_heading2(doc, "1.6 Organization of the Paper")
-    cursor = insert_after(cursor, p_org1)
-    p_org2 = create_body_paragraph(
-        doc,
-        "The remainder of this article is organized as follows: Section 2 (Materials and Methods) details standardized SFRA measurement protocols, distributed ladder circuit "
-        "equations, parameterization of six physical fault archetypes, preprocessing standardization, deep learning neural architectures, reference baseline datasets, and the "
-        "ControlVisionQA-10K multimodal generator. Section 3 (Results and Discussion) analyzes 5-fold cross-validation benchmarks, archetype classification recall, algorithmic "
-        "ablation studies, out-of-distribution stress testing, multi-phase baseline validation, and computational latency profiling. Section 4 (Conclusion) summarizes the principal findings, "
-        "addresses study limitations, and outlines future research trajectories. Section 5 provides back-matter disclosures, including data availability and references."
-    )
-    cursor = insert_after(cursor, p_org2)
 
     # -------------------------------------------------------------
     # 4. Section 2: Materials and Methods
@@ -595,9 +516,7 @@ def build_manuscript(template_file: Path, output_file: Path):
     p_mm6 = create_body_paragraph(
         doc,
         "The complete frequency response envelope incorporates high-frequency capacitive attenuation exp(-alpha fn) governed by winding ground capacitance (alpha ~ U(0.35, 0.95)) "
-        "and additive Gaussian measurement noise epsilon ~ N(0, sigma^2) simulating instrumentation noise as formalized in Eq. (4). Furthermore, electromagnetic skin effect and proximity "
-        "effect within multi-strand transposed conductors increase effective winding AC resistance at high frequencies, scaling as Rac(f) = Rdc (1 + gamma_p sqrt(f)). This progressive "
-        "resistive damping broadens high-order resonant peaks and smoothly merges modal envelopes without abrupt artificial truncation:"
+        "and additive Gaussian measurement noise epsilon ~ N(0, sigma^2) simulating instrumentation noise as formalized in Eq. (4):"
     )
     cursor = insert_after(cursor, p_mm6)
 
@@ -804,10 +723,7 @@ def build_manuscript(template_file: Path, output_file: Path):
         "Macro F1-score of 0.8234 ± 0.0149, significantly outperforming Random Forest (72.57% ± 1.28%), SVM (66.12% ± 1.14%), and MLP (64.95% ± 1.00%).\n\n"
         "The performance advantage of the 1D-CNN stems from its translationally invariant convolutional kernels, which preserve local spatial correlations between "
         "adjacent frequency points. Flat classifiers (such as SVM and MLP) treat each frequency bin as an independent tabular feature, losing topological resonance peak "
-        "continuity. Statistical variance analysis across the 5 independent folds reveals narrow standard deviations (±1.60% for 1D-CNN, ±1.28% for Random Forest, and ±1.14% for SVM), "
-        "confirming that the performance gains are statistically robust and not an artifact of favorable data partitioning. Furthermore, the 1D-CNN demonstrates consistent "
-        "convergence across all folds within 25 epochs using the Adam optimizer with cosine annealing learning rate decay, preventing overfitting to high-frequency noise components. "
-        "Fig. 2(a) displays the 1D-CNN 4-class confusion matrix, demonstrating strong diagonal concentration across all four severity grades with minimal off-diagonal dispersion.",
+        "continuity. Fig. 2(a) displays the 1D-CNN 4-class confusion matrix, demonstrating strong diagonal concentration across all four severity grades with minimal off-diagonal dispersion.",
         "3.1 5-Fold Stratified Cross-Validation & Baseline Comparison\n"
     )
     cursor = insert_after(cursor, p_cv_txt)
@@ -963,9 +879,7 @@ def build_manuscript(template_file: Path, output_file: Path):
         "memorization of generator artifacts.\n\n"
         "Second, our ablation study provides a cautionary lesson for engineering hybrid ML systems. Domain experts often introduce deterministic rule-based shape overrides to enforce 'common sense' "
         "constraints. However, our results demonstrate that heuristic rules degraded accuracy by -18.37%, as manual thresholds fail to account for multi-variable interactions in high-dimensional "
-        "parameter spaces. In contrast, deep 1D-CNN representations learn smooth, optimal decision boundaries directly from data.\n\n"
-        "Third, multi-user software architecture enhancements ensure production readiness. Previous releases shared a global SQLite database across all users without isolation. By adding foreign-key "
-        "user_id indexing, JWT token authentication, and filtered RESTful query endpoints, IntelliFRA guarantees multi-tenant isolation essential for enterprise substation fleet asset management.",
+        "parameter spaces. In contrast, deep 1D-CNN representations learn smooth, optimal decision boundaries directly from data.",
         "3.7 Intensive Comparative Discussion and Engineering Implications\n"
     )
     cursor = insert_after(cursor, p_disc1)
