@@ -243,6 +243,103 @@ def build_iteecs_manuscript(template_file: Path, user_docx_file: Path, media_dir
     user_doc = docx.Document(str(user_docx_file))
     up = [p.text.strip() for p in user_doc.paragraphs]
 
+    # Polish internal code-review / repo-audit phrasing into formal academic prose
+    # while keeping 100% of the factual architecture, formulas, and evaluation metrics intact.
+    up[11] = (
+        "IntelliFRA was developed to automate that critical first pass of diagnostic interpretation. "
+        "An engineer uploads a magnitude-only CSV or TXT sweep through a React web interface, and the "
+        "system returns a four-level severity classification, a class-probability breakdown, a confidence "
+        "percentage, an anomaly score, and a concise plain-English diagnostic explanation, all stored in "
+        "a persisted, filterable history. This paper presents the complete end-to-end architecture of the "
+        "platform, details the exact mathematical formulations used at both training and inference time, "
+        "describes the 50,000-sample physics-inspired synthetic training corpus, and reports comprehensive "
+        "evaluation metrics derived directly from the trained model artefacts (training_metrics.json, "
+        "ml_meta.json, and the validation confusion matrices)."
+    )
+    up[31] = (
+        "Autoencoder: the implemented FRAAutoencoder is a symmetric fully connected (dense) encoder–decoder "
+        "network (500→256→96→32→96→256→500) with ReLU activations and a 32-unit bottleneck. Trained only on "
+        "Normal samples using reconstruction MSE — following the reconstruction-error paradigm established by "
+        "Sakurada and Yairi [16] for autoencoder-based anomaly detection — it computes an anomaly score by "
+        "dividing the reconstruction error by a decision threshold τ, stored in ml_meta.json as the 95th "
+        "percentile of Normal training reconstruction error."
+    )
+    up[99] = (
+        "generate_dataset.py produces 50,000 labelled curves by default (12,500 per class, 500 points each), "
+        "using deterministic per-sample seeds (seed = 42 + class_index × 1,000,000 + i) so the dataset can be "
+        "reproduced bit-for-bit, and shuffles the rows before writing backend/data/fra_dataset.csv. This "
+        "large-scale, systematically parameterized corpus provides dense coverage across all six physical "
+        "fault archetypes and four operational severity levels."
+    )
+    up[104] = (
+        "Evaluation uses scikit-learn's [19] classification_report, confusion_matrix, and "
+        "precision/recall/F-score/support (weighted average for the four-class CNN task; binary average for "
+        "the Normal-vs-Fault autoencoder task) — following standard evaluation conventions for machine "
+        "learning pipelines [9] — computed on the held-out 10,000-row validation split. Table 2 summarizes "
+        "the training configuration used for both models."
+    )
+    up[132] = (
+        "The shape-override thresholds (0.2 / 0.9 / 1 for the Normal-downgrade branch; 0.8/4, 0.45/2, and "
+        "0.2 for the escalation ladder) are domain-informed heuristic constants rather than parameters learned "
+        "via cross-validation. Because this stage can adjust the CNN's raw argmax prediction in either "
+        "direction when strong morphological signatures are detected, the final diagnostic label reflects a "
+        "combination of learned spectral representations and deterministic structural safeguards, which is an "
+        "important consideration for diagnostic explainability. The rule/FFT fallback (model_source: "
+        "\"rule_fallback\") is not invoked during the validation experiments reported above; it activates only "
+        "when the PyTorch runtime or model weight artefacts (.pth/ml_meta.json) are unavailable, in which case "
+        "it assigns a fixed heuristic confidence distribution (0.85 for the predicted class and 0.05 for the "
+        "remaining classes)."
+    )
+    up[141] = (
+        "While the experimental evaluation demonstrates strong classification and anomaly-detection performance "
+        "on physics-synthesized sweeps, several methodological and engineering limitations warrant discussion "
+        "and define clear directions for future work:"
+    )
+    up[144] = (
+        "In the current database schema, FRAResult records are stored in a shared table across authenticated "
+        "sessions rather than partitioned by a user_id foreign key. Introducing per-account and per-substation "
+        "tenant scoping is a straightforward schema extension planned for multi-utility deployment."
+    )
+    up[145] = (
+        "The shape-override thresholds currently rely on fixed domain-informed constants rather than "
+        "cross-validated or jointly learned parameters. Future work will conduct systematic threshold "
+        "sensitivity analyses and ablation studies to quantify the independent marginal contribution of the "
+        "morphological override stage relative to the standalone 1D-CNN."
+    )
+    up[146] = (
+        "While the implemented fully connected autoencoder (500→256→96→32→96→256→500) achieves 98.47% "
+        "Normal-vs-Fault detection accuracy with 100% fault recall, replacing the dense encoder–decoder layers "
+        "with strided 1D convolutional layers could better capture localized shift-invariant resonance "
+        "distortions and will be benchmarked in future comparative studies."
+    )
+    up[147] = (
+        "Formal request-level latency profiling across the end-to-end inference pipeline (file ingestion, "
+        "z-score normalization, 1D-CNN forward pass, autoencoder scoring, shape override, and database "
+        "persistence) under concurrent request loads has not yet been benchmarked, and will be evaluated "
+        "alongside an independent three-way train/validation/test split in future releases."
+    )
+    up[148] = (
+        "Although the model_source indicator (ml vs. rule_fallback) is computed and persisted by the backend, "
+        "surfacing this indicator directly within the frontend diagnostic view will further improve "
+        "operational transparency and auditability for field engineers."
+    )
+    up[149] = (
+        "Additional platform extensions on the development roadmap include automated PDF diagnostic report "
+        "export, interactive side-by-side sweep comparison against stored historical baselines, and "
+        "production-grade observability and continuous-integration pipelines."
+    )
+    up[151] = (
+        "This paper presented IntelliFRA, an open-source, end-to-end diagnostic platform for automated power "
+        "transformer fault detection using Sweep Frequency Response Analysis (SFRA). The system integrates a "
+        "hybrid 1D-CNN and fully connected autoencoder pipeline, reinforced by a deterministic morphological "
+        "shape-override layer and an FFT-based rule fallback, trained on a reproducible 50,000-sample "
+        "physics-inspired synthetic ladder-network dataset spanning six literature-derived fault archetypes "
+        "mapped onto four severity labels. On held-out synthetic validation data (n = 10,000), the 1D-CNN "
+        "reaches 94.41% classification accuracy (weighted F1 = 0.9443), and the autoencoder achieves 98.47% "
+        "Normal-vs-Fault accuracy with 100% fault recall — all delivered within an authenticated FastAPI, "
+        "JWT, and SQLite backend paired with a React, Recharts, and Three.js frontend."
+    )
+
     # -------------------------------------------------------------
     # 1. Clean Running Headers across all Sections
     # -------------------------------------------------------------
@@ -720,7 +817,7 @@ def build_iteecs_manuscript(template_file: Path, user_docx_file: Path, media_dir
     p_fig5 = create_image_paragraph(doc, media_dir / "image5.png", 2.3)
     p_cap_fig5 = create_caption(
         doc, "Fig. 5: ",
-        "Representative synthetic SFRA curves — one per severity class — generated with the shipped physics_fra_synthesis.py",
+        "Representative synthetic SFRA curves — one per severity class — generated with physics_fra_synthesis.py",
         align=WD_ALIGN_PARAGRAPH.CENTER
     )
     cursor = insert_after(cursor, p_fig5)
@@ -751,7 +848,7 @@ def build_iteecs_manuscript(template_file: Path, user_docx_file: Path, media_dir
         ["Threshold τ", "—", "95th percentile of Normal train reconstruction error"],
     ]
     t2_widths = [Inches(0.85), Inches(1.15), Inches(1.25)]
-    p_cap_t2 = create_caption(doc, "Table. 2: ", "Training configuration used to produce the shipped models")
+    p_cap_t2 = create_caption(doc, "Table. 2: ", "Training configuration for the 1D-CNN and Autoencoder models")
     tbl2 = doc.add_table(rows=len(t2_rows) + 1, cols=3)
     style_table_cells(tbl2, t2_headers, t2_rows, t2_widths)
     cursor = insert_after(cursor, p_cap_t2)
