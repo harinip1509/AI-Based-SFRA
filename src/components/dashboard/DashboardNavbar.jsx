@@ -63,7 +63,8 @@ export default function DashboardNavbar({ user = { name: 'Engineer', email: 'use
         {[
           { label: 'Overview', path: '/dashboard', active: true },
           { label: 'Analyses', path: '/dashboard', onClick: handleAnalyses },
-          { label: 'Upload', path: '/upload' },
+          { label: 'Upload SFRA', path: '/upload' },
+          { label: '🛰️ Substation Radar', path: '/substations' },
         ].map(({ label, path, active, onClick }) => (
           <button
             key={label}

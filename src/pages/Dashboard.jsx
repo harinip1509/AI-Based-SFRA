@@ -128,6 +128,52 @@ export default function Dashboard() {
       <DashboardNavbar user={user} onLogout={handleLogout} history={filteredHistory} />
 
       <main style={{ padding: '24px 28px 34px', maxWidth: '1400px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '18px' }}>
+        
+        {/* Substation Geolocation Radar Banner for Engineers */}
+        <div style={{
+          background: '#0F172A',
+          border: '1.5px solid #0284C7',
+          borderRadius: '10px',
+          padding: '18px 22px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '14px',
+          boxShadow: '0 4px 16px rgba(2,132,199,0.15)',
+        }}>
+          <div>
+            <div style={{ fontSize: '11px', fontWeight: 800, color: '#38BDF8', letterSpacing: '0.1em', textTransform: 'uppercase', fontFamily: "'JetBrains Mono', monospace" }}>
+              LOCATION-AWARE ASSET DISCOVERY • INDIAN POWER GRID
+            </div>
+            <div style={{ fontSize: '18px', fontWeight: 800, color: '#FFFFFF', marginTop: '4px' }}>
+              🛰️ Substation & Transformer Asset Radar
+            </div>
+            <div style={{ fontSize: '13.5px', color: '#94A3B8', marginTop: '3px' }}>
+              Detects your coordinates in India and identifies nearby 765 kV / 400 kV / 220 kV substations, BHEL/ABB transformer IDs, and live health indices.
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => navigate('/substations')}
+            style={{
+              padding: '10px 18px',
+              borderRadius: '6px',
+              background: '#0284C7',
+              border: 'none',
+              color: '#FFFFFF',
+              fontSize: '13px',
+              fontWeight: 800,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+            }}
+          >
+            Launch Substation Radar →
+          </button>
+        </div>
+
         <AnimatedSection>
           <StatusCards history={filteredHistory} />
         </AnimatedSection>

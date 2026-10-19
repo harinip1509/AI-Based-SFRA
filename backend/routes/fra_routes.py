@@ -24,6 +24,7 @@ from services.image_processor import (
     generate_sfra_engineering_plot,
 )
 from services.substation_diagnostic_engine import run_substation_diagnostic_fusion
+from services.indian_substations import find_nearby_substations
 from fastapi import Form
 from pydantic import BaseModel
 
@@ -304,6 +305,26 @@ def get_history(
             }
         )
     return out
+
+
+@router.get("/nearby-substations")
+def get_nearby_substations(
+    latitude: Optional[float] = 19.0222,
+    longitude: Optional[float] = 72.8697,
+    limit: int = 6,
+):
+    """
+    Returns Indian electrical substations and transformer assets
+    sorted by proximity to the detected GPS coordinates.
+    """
+    lat = latitude if latitude is not None else 19.0222
+    lon = longitude if longitude is not None else 72.8697
+    substations = find_nearby_substations(user_lat=lat, user_lon=lon, limit=limit)
+    return {
+        "user_coords": {"latitude": lat, "longitude": lon},
+        "total_located": len(substations),
+        "substations": substations,
+    }
 
 
 @router.get("/metrics")

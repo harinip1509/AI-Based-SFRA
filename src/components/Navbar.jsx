@@ -81,6 +81,12 @@ export default function Navbar() {
       {/* Actions */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
         <button
+          style={{ fontSize: '13px', fontWeight: 600, color: '#38BDF8', background: 'rgba(56,189,248,0.1)', border: '1px solid rgba(56,189,248,0.25)', borderRadius: '6px', cursor: 'pointer', padding: '6px 12px' }}
+          onClick={() => navigate('/substations')}
+        >
+          🛰️ Substation Radar
+        </button>
+        <button
           style={{ fontSize: '14px', fontWeight: 500, color: 'rgba(255,255,255,0.7)', background: 'none', border: 'none', cursor: 'pointer', padding: '8px 12px' }}
           onClick={() => navigate(hasToken() ? '/dashboard' : '/login')}
           onMouseEnter={e => e.currentTarget.style.color = '#fff'}

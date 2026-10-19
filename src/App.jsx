@@ -13,6 +13,7 @@ import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import Upload from './pages/Upload'
 import Results from './pages/Results'
+import SubstationsRadar from './pages/SubstationsRadar'
 import ProtectedRoute from './auth/ProtectedRoute'
 
 export default function App() {
@@ -58,6 +59,7 @@ export default function App() {
         />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/substations" element={<SubstationsRadar />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/upload" element={<Upload />} />
