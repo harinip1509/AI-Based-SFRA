@@ -195,6 +195,21 @@ export default function Results() {
           <div style={{ display: 'flex', gap: '10px' }}>
             <button
               type="button"
+              onClick={() => window.print()}
+              style={{
+                padding: '10px 14px',
+                borderRadius: '12px',
+                background: 'rgba(0,212,255,0.08)',
+                border: '1px solid rgba(0,212,255,0.25)',
+                color: '#00D4FF',
+                cursor: 'pointer',
+                fontWeight: 700,
+              }}
+            >
+              📄 Print Diagnostic Sheet
+            </button>
+            <button
+              type="button"
               onClick={() => navigate('/upload')}
               style={{
                 padding: '10px 14px',
@@ -226,9 +241,49 @@ export default function Results() {
           </div>
         </div>
 
+        {/* IEEE Std C57.149 Sub-Band Breakdown */}
+        {data.subbands ? (
+          <div style={{ marginBottom: '16px' }}>
+            <div style={{ fontSize: '11px', fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(0,212,255,0.85)', marginBottom: '8px' }}>
+              IEEE Std C57.149-2012 Frequency Sub-Band Diagnostics
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '12px' }}>
+              {Object.entries(data.subbands).map(([key, band]) => {
+                const isNominal = band.status.includes('Normal') || band.status.includes('Nominal')
+                const isModerate = band.status.includes('Moderate')
+                const badgeColor = isNominal ? '#10B981' : (isModerate ? '#F59E0B' : '#EF4444')
+                const badgeBg = isNominal ? 'rgba(16,185,129,0.1)' : (isModerate ? 'rgba(245,158,11,0.1)' : 'rgba(239,68,68,0.1)')
+                return (
+                  <div key={key} style={{
+                    padding: '14px 16px',
+                    borderRadius: '16px',
+                    background: 'rgba(255,255,255,0.03)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div style={{ fontSize: '12px', fontWeight: 800, color: '#fff' }}>{band.name}</div>
+                      <span style={{ fontSize: '11px', fontWeight: 700, padding: '3px 8px', borderRadius: '999px', background: badgeBg, color: badgeColor }}>
+                        {band.status}
+                      </span>
+                    </div>
+                    <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)', marginTop: '4px' }}>
+                      {band.governing_physics}
+                    </div>
+                    <div style={{ display: 'flex', gap: '14px', marginTop: '10px', fontSize: '11px', color: 'rgba(255,255,255,0.65)' }}>
+                      <div>Mean: <strong style={{ color: '#fff' }}>{band.mean} dB</strong></div>
+                      <div>Std: <strong style={{ color: '#fff' }}>{band.std} dB</strong></div>
+                      <div>Range: <strong style={{ color: '#fff' }}>{band.range} dB</strong></div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        ) : null}
+
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(6, minmax(0, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
           gap: '12px',
           marginBottom: '14px',
         }}>
@@ -246,60 +301,129 @@ export default function Results() {
           </div>
         ) : null}
 
-        <div style={{
-          background: 'rgba(255,255,255,0.03)',
-          border: '1px solid rgba(255,255,255,0.08)',
-          borderRadius: '24px',
-          padding: '18px 18px 10px',
-          backdropFilter: 'blur(18px)',
-        }}>
-          <div style={{ fontSize: '12px', fontWeight: 900, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.45)', marginBottom: '10px' }}>
-            FRA Series (first {data.series?.length || 0} points)
+        <div style={{ display: 'grid', gridTemplateColumns: data.plot_image ? '1fr 1fr' : '1fr', gap: '16px', marginBottom: '16px' }}>
+          {/* Interactive Recharts Series */}
+          <div style={{
+            background: 'rgba(255,255,255,0.03)',
+            border: '1px solid rgba(255,255,255,0.08)',
+            borderRadius: '24px',
+            padding: '18px 18px 10px',
+            backdropFilter: 'blur(18px)',
+          }}>
+            <div style={{ fontSize: '12px', fontWeight: 900, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.45)', marginBottom: '10px' }}>
+              Interactive Response ({data.series?.length || 0} pts)
+            </div>
+
+            <div style={{ width: '100%', height: '340px' }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={chartData} margin={{ top: 8, right: 16, bottom: 8, left: 0 }}>
+                  <defs>
+                    <linearGradient id="fraLine" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor="#00D4FF" stopOpacity={1} />
+                      <stop offset="100%" stopColor="#6C63FF" stopOpacity={1} />
+                    </linearGradient>
+                  </defs>
+                  <XAxis
+                    dataKey="i"
+                    tick={{ fill: 'rgba(255,255,255,0.35)', fontSize: 11 }}
+                    axisLine={{ stroke: 'rgba(255,255,255,0.12)' }}
+                    tickLine={{ stroke: 'rgba(255,255,255,0.12)' }}
+                  />
+                  <YAxis
+                    tick={{ fill: 'rgba(255,255,255,0.35)', fontSize: 11 }}
+                    axisLine={{ stroke: 'rgba(255,255,255,0.12)' }}
+                    tickLine={{ stroke: 'rgba(255,255,255,0.12)' }}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      background: 'rgba(10,15,26,0.92)',
+                      border: '1px solid rgba(255,255,255,0.12)',
+                      borderRadius: '14px',
+                      boxShadow: '0 20px 60px rgba(0,0,0,0.45)',
+                      color: '#fff',
+                    }}
+                    labelStyle={{ color: 'rgba(255,255,255,0.55)' }}
+                    itemStyle={{ color: '#00D4FF' }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="v"
+                    stroke="url(#fraLine)"
+                    strokeWidth={2.2}
+                    dot={false}
+                    isAnimationActive={false}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
           </div>
 
-          <div style={{ width: '100%', height: '380px' }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData} margin={{ top: 8, right: 16, bottom: 8, left: 0 }}>
-                <defs>
-                  <linearGradient id="fraLine" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%" stopColor="#00D4FF" stopOpacity={1} />
-                    <stop offset="100%" stopColor="#6C63FF" stopOpacity={1} />
-                  </linearGradient>
-                </defs>
-                <XAxis
-                  dataKey="i"
-                  tick={{ fill: 'rgba(255,255,255,0.35)', fontSize: 11 }}
-                  axisLine={{ stroke: 'rgba(255,255,255,0.12)' }}
-                  tickLine={{ stroke: 'rgba(255,255,255,0.12)' }}
-                />
-                <YAxis
-                  tick={{ fill: 'rgba(255,255,255,0.35)', fontSize: 11 }}
-                  axisLine={{ stroke: 'rgba(255,255,255,0.12)' }}
-                  tickLine={{ stroke: 'rgba(255,255,255,0.12)' }}
-                />
-                <Tooltip
-                  contentStyle={{
-                    background: 'rgba(10,15,26,0.92)',
-                    border: '1px solid rgba(255,255,255,0.12)',
-                    borderRadius: '14px',
-                    boxShadow: '0 20px 60px rgba(0,0,0,0.45)',
-                    color: '#fff',
-                  }}
-                  labelStyle={{ color: 'rgba(255,255,255,0.55)' }}
-                  itemStyle={{ color: '#00D4FF' }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="v"
-                  stroke="url(#fraLine)"
-                  strokeWidth={2.2}
-                  dot={false}
-                  isAnimationActive={false}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
+          {/* Publication-Grade Visual Engineering Plot */}
+          {data.plot_image ? (
+            <div style={{
+              background: 'rgba(255,255,255,0.03)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              borderRadius: '24px',
+              padding: '18px',
+              backdropFilter: 'blur(18px)',
+              display: 'flex',
+              flexDirection: 'column',
+            }}>
+              <div style={{ fontSize: '12px', fontWeight: 900, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(0,212,255,0.85)', marginBottom: '10px' }}>
+                IEEE C57.149 Calibrated Plot (20 Hz - 2 MHz)
+              </div>
+              <img
+                src={data.plot_image}
+                alt="SFRA Engineering Plot"
+                style={{ width: '100%', height: 'auto', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.08)', objectFit: 'contain' }}
+              />
+            </div>
+          ) : null}
         </div>
+
+        {/* Visual Question Answering (ControlVisionQA) Inspector */}
+        {data.vqa_pairs && data.vqa_pairs.length > 0 ? (
+          <div style={{
+            background: 'rgba(255,255,255,0.03)',
+            border: '1px solid rgba(255,255,255,0.08)',
+            borderRadius: '24px',
+            padding: '20px',
+            backdropFilter: 'blur(18px)',
+            marginBottom: '20px',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+              <div>
+                <div style={{ fontSize: '11px', fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(0,212,255,0.85)' }}>
+                  Visual Question Answering & Engineering Properties
+                </div>
+                <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', marginTop: '2px' }}>
+                  Automated engineering reasoning across stability, pole dynamics, and physical structural integrity.
+                </div>
+              </div>
+              <span style={{ fontSize: '11px', fontWeight: 700, padding: '4px 10px', borderRadius: '999px', background: 'rgba(0,212,255,0.1)', color: '#00D4FF', border: '1px solid rgba(0,212,255,0.2)' }}>
+                {data.vqa_pairs.length} QA Inferences
+              </span>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '10px' }}>
+              {data.vqa_pairs.map((qa, idx) => (
+                <div key={idx} style={{
+                  padding: '12px 14px',
+                  borderRadius: '12px',
+                  background: 'rgba(255,255,255,0.02)',
+                  border: '1px solid rgba(255,255,255,0.06)',
+                }}>
+                  <div style={{ fontSize: '11.5px', color: 'rgba(255,255,255,0.5)', fontWeight: 600 }}>
+                    Q: {qa.question}
+                  </div>
+                  <div style={{ fontSize: '13px', color: '#00D4FF', fontWeight: 800, marginTop: '4px' }}>
+                    {qa.answer}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : null}
       </div>
     </div>
   )

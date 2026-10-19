@@ -19,19 +19,19 @@ export default function Upload() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const fileLabel = useMemo(() => file?.name || 'Choose CSV/TXT file', [file])
+  const fileLabel = useMemo(() => file?.name || 'Choose CSV, TXT, or Plot Image (PNG/JPG)', [file])
 
   const onSubmit = async (e) => {
     e.preventDefault()
     setError('')
     if (!file) {
-      setError('Please select a .csv or .txt file')
+      setError('Please select a .csv, .txt, .png, or .jpg file')
       return
     }
 
     const ext = (file.name.split('.').pop() || '').toLowerCase()
-    if (!['csv', 'txt'].includes(ext)) {
-      setError('Only .csv or .txt files are supported')
+    if (!['csv', 'txt', 'png', 'jpg', 'jpeg'].includes(ext)) {
+      setError('Only .csv, .txt, .png, or .jpg files are supported')
       return
     }
     if (file.size > MAX_FILE_BYTES) {
@@ -107,7 +107,7 @@ export default function Upload() {
               Upload FRA File
             </h1>
             <div style={{ marginTop: '8px', color: 'rgba(255,255,255,0.55)', maxWidth: '560px', lineHeight: 1.65 }}>
-              Upload a <span style={{ color: 'rgba(0,212,255,0.9)', fontWeight: 700 }}>.csv</span> or <span style={{ color: 'rgba(0,212,255,0.9)', fontWeight: 700 }}>.txt</span> file. We'll compute quick metrics and a simple risk classification.
+              Upload raw sweep files (<span style={{ color: 'rgba(0,212,255,0.9)', fontWeight: 700 }}>.csv</span>, <span style={{ color: 'rgba(0,212,255,0.9)', fontWeight: 700 }}>.txt</span>) or visual plot images (<span style={{ color: 'rgba(0,212,255,0.9)', fontWeight: 700 }}>.png</span>, <span style={{ color: 'rgba(0,212,255,0.9)', fontWeight: 700 }}>.jpg</span>). Optical curve digitization & IEEE C57.149 sub-band analysis run automatically.
             </div>
           </div>
 
@@ -174,7 +174,7 @@ export default function Upload() {
                 </span>
                 <input
                   type="file"
-                  accept=".csv,.txt"
+                  accept=".csv,.txt,.png,.jpg,.jpeg"
                   style={{ display: 'none' }}
                   onChange={(e) => setFile(e.target.files?.[0] || null)}
                 />

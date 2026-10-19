@@ -17,6 +17,12 @@ from database import get_db
 from models import FRAResult, User
 from services.fra_model import analyze_fra
 from services.ml_model import analyze_fra_ml
+from services.image_processor import (
+    extract_curve_from_image_bytes,
+    calculate_subband_metrics,
+    generate_vqa_pairs_for_curve,
+    generate_sfra_engineering_plot,
+)
 
 router = APIRouter()
 
@@ -63,19 +69,28 @@ async def upload_fra_file(
 ):
     filename = file.filename or "upload"
     ext = filename.lower().rsplit(".", 1)[-1] if "." in filename else ""
-    if ext not in {"csv", "txt"}:
+    valid_exts = {"csv", "txt", "png", "jpg", "jpeg"}
+    if ext not in valid_exts:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Only .csv or .txt files are supported",
+            detail="Supported formats: .csv, .txt, .png, .jpg, .jpeg (SFRA images or raw sweeps)",
         )
 
     raw = await file.read()
-    try:
-        text = raw.decode("utf-8", errors="ignore")
-    except Exception:
-        raise HTTPException(status_code=400, detail="Could not decode file")
+    is_image = ext in {"png", "jpg", "jpeg"}
 
-    series = _parse_numeric_series(text, ext=ext)
+    if is_image:
+        try:
+            series = extract_curve_from_image_bytes(raw)
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=f"Failed to extract SFRA curve from image: {str(e)}")
+    else:
+        try:
+            text = raw.decode("utf-8", errors="ignore")
+        except Exception:
+            raise HTTPException(status_code=400, detail="Could not decode file")
+        series = _parse_numeric_series(text, ext=ext)
+
     cleaned = [float(v) for v in series if math.isfinite(v)]
     if len(cleaned) < 50:
         raise HTTPException(
@@ -90,9 +105,22 @@ async def upload_fra_file(
     n = len(cleaned)
     result_id = str(uuid.uuid4())
 
+    # Compute IEEE C57.149 subband metrics, engineering plot, and VQA pairs
+    subbands = calculate_subband_metrics(cleaned)
+    plot_image = generate_sfra_engineering_plot(cleaned, analysis["classification"])
+    vqa_pairs = generate_vqa_pairs_for_curve(
+        filename=filename,
+        series=cleaned,
+        classification=analysis["classification"],
+        confidence=float(analysis.get("confidence", 0.0)),
+        anomaly_score=float(analysis.get("anomaly_score", 0.0)),
+        subbands=subbands,
+    )
+
     stored = {
         "filename": filename,
         "points": n,
+        "is_image_upload": is_image,
         "mean": metrics["mean"],
         "max": metrics["max"],
         "min": metrics["min"],
@@ -109,6 +137,9 @@ async def upload_fra_file(
         "model_source": analysis.get("model_source", "rule"),
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "series": [float(x) for x in cleaned[:SERIES_LIMIT]],
+        "subbands": subbands,
+        "plot_image": plot_image,
+        "vqa_pairs": vqa_pairs,
     }
     db_result = FRAResult(
         id=result_id,
