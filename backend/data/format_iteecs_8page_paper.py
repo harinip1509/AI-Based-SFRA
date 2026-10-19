@@ -750,22 +750,31 @@ def build_iteecs_manuscript(template_file: Path, user_docx_file: Path, media_dir
     p_orig[1].paragraph_format.space_before = Pt(0)
     p_orig[1].paragraph_format.space_after = Pt(0)
 
-    # Authors Line (p_orig[2]) - Preserves ORCID drawings from template
+    # Update ORCID target relationship in template
+    if "rId8" in doc.part.rels:
+        doc.part.rels["rId8"]._target = "https://orcid.org/0009-0006-6723-2991"
+
+    # Authors Line (p_orig[2]) - Preserves ORCID drawing for Harini Panigrahi
     p2 = p_orig[2]
+    # Remove unused second drawing (run 11) from template so no orphan icon appears
+    if len(p2.runs) > 11 and "drawing" in p2.runs[11]._r.xml:
+        p2.runs[11]._r.getparent().remove(p2.runs[11]._r)
+
     p2.runs[0].text = "Harini Panigrahi"
     p2.runs[1].text = "¹"
     p2.runs[2].text = ""
     p2.runs[3].text = ""
+    # p2.runs[4] is the ORCID drawing icon linking to rId8 (Harini's ORCID)
     p2.runs[5].text = ", "
     p2.runs[6].text = "Neha Verma¹"
     p2.runs[7].text = ", "
     p2.runs[8].text = "Prapti Bhayde¹"
     p2.runs[9].text = ", "
     p2.runs[10].text = "Yooraj Gole¹"
-    p2.runs[12].text = ", "
-    p2.runs[13].text = "Bhanu Tekwani¹"
+    p2.runs[11].text = ", "
+    p2.runs[12].text = "Bhanu Tekwani¹*"
+    p2.runs[13].text = ""
     p2.runs[14].text = ""
-    p2.runs[15].text = ""
     p2.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p2.paragraph_format.space_before = Pt(2)
     p2.paragraph_format.space_after = Pt(2)
@@ -773,15 +782,21 @@ def build_iteecs_manuscript(template_file: Path, user_docx_file: Path, media_dir
         r.font.name = "Times New Roman"
         r.font.size = Pt(11.5)
 
-    # Affiliation (p_orig[3])
+    # Affiliation, Emails, and ORCID link (p_orig[3])
     p3 = p_orig[3]
     p3.text = ""
     p3.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p3.paragraph_format.space_before = Pt(1)
     p3.paragraph_format.space_after = Pt(2)
-    r3 = p3.add_run("¹Department of Information Technology, Vidyalankar Institute of Technology, Mumbai 400037, Maharashtra, India")
-    r3.font.name = "Palatino Linotype"
-    r3.font.size = Pt(9.5)
+    r3_affil = p3.add_run("¹Department of Information Technology, Vidyalankar Institute of Technology, Mumbai 400037, Maharashtra, India\n")
+    r3_affil.font.name = "Palatino Linotype"
+    r3_affil.font.size = Pt(9.0)
+    r3_email = p3.add_run("E-mails: harinipanigrahi15@gmail.com, neha.nandkumar.verma@gmail.com, prapti.bhayde66@gmail.com, Yooraj20gole@gmail.com, bhanu.tekwani@vit.edu.in*\n")
+    r3_email.font.name = "Palatino Linotype"
+    r3_email.font.size = Pt(8.5)
+    r3_orcid = p3.add_run("ORCID: Harini Panigrahi (https://orcid.org/0009-0006-6723-2991)  |  * Corresponding Author")
+    r3_orcid.font.name = "Palatino Linotype"
+    r3_orcid.font.size = Pt(8.5)
 
     # p_orig[4]: Section Break anchor ONLY (empty, numPr removed so NO '1. ' bullet appears)
     p4 = p_orig[4]
