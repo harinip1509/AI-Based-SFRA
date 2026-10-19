@@ -5,7 +5,7 @@ import math
 import uuid
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 import numpy as np
@@ -23,10 +23,21 @@ from services.image_processor import (
     generate_vqa_pairs_for_curve,
     generate_sfra_engineering_plot,
 )
+from services.substation_diagnostic_engine import run_substation_diagnostic_fusion
+from fastapi import Form
+from pydantic import BaseModel
 
 router = APIRouter()
 
 SERIES_LIMIT = 500
+
+
+class FusionUpdateRequest(BaseModel):
+    result_id: Optional[str] = None
+    series: Optional[List[float]] = None
+    dga: Optional[Dict[str, float]] = None
+    pd: Optional[Dict[str, float]] = None
+    simulate_bad_ground: Optional[bool] = False
 
 
 def _parse_numeric_series(contents: str, ext: str) -> List[float]:
@@ -64,6 +75,9 @@ def _parse_numeric_series(contents: str, ext: str) -> List[float]:
 @router.post("/upload")
 async def upload_fra_file(
     file: UploadFile = File(...),
+    dga_json: Optional[str] = Form(None),
+    pd_json: Optional[str] = Form(None),
+    asset_tag: Optional[str] = Form("TR-400KV-BAY2"),
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -78,6 +92,11 @@ async def upload_fra_file(
 
     raw = await file.read()
     is_image = ext in {"png", "jpg", "jpeg"}
+
+    # Extract clean string values if called directly outside FastAPI DI
+    tag_str = asset_tag if isinstance(asset_tag, str) else "TR-400KV-BAY2"
+    dga_raw = dga_json if isinstance(dga_json, str) else None
+    pd_raw = pd_json if isinstance(pd_json, str) else None
 
     if is_image:
         try:
@@ -105,6 +124,21 @@ async def upload_fra_file(
     n = len(cleaned)
     result_id = str(uuid.uuid4())
 
+    # Parse optional DGA and PD logs
+    dga_dict = None
+    if dga_raw:
+        try:
+            dga_dict = json.loads(dga_raw)
+        except Exception:
+            pass
+
+    pd_dict = None
+    if pd_raw:
+        try:
+            pd_dict = json.loads(pd_raw)
+        except Exception:
+            pass
+
     # Compute IEEE C57.149 subband metrics, engineering plot, and VQA pairs
     subbands = calculate_subband_metrics(cleaned)
     plot_image = generate_sfra_engineering_plot(cleaned, analysis["classification"])
@@ -117,8 +151,23 @@ async def upload_fra_file(
         subbands=subbands,
     )
 
+    # Multi-Modal Substation Diagnostic Fusion (IEEE C57.149 + DGA C57.104 + PD IEC 60270)
+    freqs = np.logspace(np.log10(20.0), np.log10(2.0e6), n)
+    curr_arr = np.array(cleaned)
+    fusion_output = run_substation_diagnostic_fusion(
+        freqs=freqs,
+        curr_mag=curr_arr,
+        base_mag=None,
+        dga_data=dga_dict,
+        pd_data=pd_dict,
+        ai_classification=analysis["classification"],
+        ai_confidence=float(analysis.get("confidence", 0.0)),
+        autoencoder_anomaly_score=float(analysis.get("anomaly_score", 0.0)),
+    )
+
     stored = {
         "filename": filename,
+        "asset_tag": tag_str,
         "points": n,
         "is_image_upload": is_image,
         "mean": metrics["mean"],
@@ -140,6 +189,9 @@ async def upload_fra_file(
         "subbands": subbands,
         "plot_image": plot_image,
         "vqa_pairs": vqa_pairs,
+        "fusion": fusion_output,
+        "dga": dga_dict or {"H2": 15.0, "CH4": 8.0, "C2H6": 5.0, "C2H4": 12.0, "C2H2": 0.0, "CO": 180.0, "CO2": 1200.0},
+        "pd": pd_dict or {"peak_pC": 45.0, "pulse_rate_pps": 120.0},
     }
     db_result = FRAResult(
         id=result_id,
@@ -152,6 +204,58 @@ async def upload_fra_file(
     db.commit()
 
     return {"id": result_id, **stored}
+
+
+@router.post("/fusion-evaluate")
+def evaluate_fusion(
+    req: FusionUpdateRequest,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Live interactive multi-modal evaluation endpoint for substation asset engineers.
+    Cross-references current sweep with dynamic DGA and Partial Discharge adjustments.
+    """
+    series = req.series
+    if not series and req.result_id:
+        row = db.query(FRAResult).filter(
+            FRAResult.id == req.result_id,
+            FRAResult.user_id == user.id,
+        ).first()
+        if row and row.data:
+            series = row.data.get("series", [])
+
+    if not series or len(series) < 10:
+        raise HTTPException(status_code=400, detail="Valid FRA series required for fusion evaluation.")
+
+    n = len(series)
+    freqs = np.logspace(np.log10(20.0), np.log10(2.0e6), n)
+    curr_arr = np.array(series, dtype=np.float64)
+
+    # Optional test lead error simulation (IEEE C57.149 Section 7.2)
+    if req.simulate_bad_ground:
+        idx_uhf = np.where(freqs >= 1_000_000.0)[0]
+        curr_arr = curr_arr.copy()
+        curr_arr[idx_uhf] += 6.5
+
+    ai_analysis = analyze_fra_ml(list(curr_arr))
+    fusion_output = run_substation_diagnostic_fusion(
+        freqs=freqs,
+        curr_mag=curr_arr,
+        base_mag=None,
+        dga_data=req.dga,
+        pd_data=req.pd,
+        ai_classification=ai_analysis["classification"],
+        ai_confidence=float(ai_analysis.get("confidence", 0.0)),
+        autoencoder_anomaly_score=float(ai_analysis.get("anomaly_score", 0.0)),
+    )
+
+    return {
+        "fusion": fusion_output,
+        "dga": req.dga,
+        "pd": req.pd,
+        "ai_classification": ai_analysis["classification"],
+    }
 
 
 @router.get("/results/{result_id}")
