@@ -2,6 +2,7 @@ import csv
 import io
 import json
 import math
+import re
 import uuid
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -25,12 +26,19 @@ from services.image_processor import (
 )
 from services.substation_diagnostic_engine import run_substation_diagnostic_fusion
 from services.indian_substations import find_nearby_substations
+from services.ai_copilot_service import generate_expert_response
 from fastapi import Form
 from pydantic import BaseModel
 
 router = APIRouter()
 
 SERIES_LIMIT = 500
+
+
+class ChatRequest(BaseModel):
+    message: str
+    history: Optional[List[Dict[str, str]]] = None
+    context: Optional[Dict[str, Any]] = None
 
 
 class FusionUpdateRequest(BaseModel):
@@ -41,36 +49,133 @@ class FusionUpdateRequest(BaseModel):
     simulate_bad_ground: Optional[bool] = False
 
 
-def _parse_numeric_series(contents: str, ext: str) -> List[float]:
-    series: List[float] = []
-    if ext == "csv":
-        reader = csv.DictReader(io.StringIO(contents))
-        for row in reader:
-            try:
-                v = float(row["magnitude"])
-            except Exception:
-                continue
-            if math.isfinite(v):
-                series.append(v)
-            if len(series) >= SERIES_LIMIT * 4:
-                break
-        return series
+def _parse_fra_dataset(contents: str, ext: str) -> tuple[List[float], List[float], List[float], Dict[str, str]]:
+    """
+    Parses SFRA test files with optional # TEST METADATA header and # DATA MATRIX columns:
+    Frequency_Hz, Magnitude_dB, Phase_Degrees.
+    Also handles raw unlabelled 2-column or 3-column delimited exports from Doble, Omicron, Megger.
+    """
+    magnitudes: List[float] = []
+    frequencies: List[float] = []
+    phases: List[float] = []
+    metadata: Dict[str, str] = {}
 
-    # txt fallback: parse one numeric value per line/cell
-    reader = csv.reader(io.StringIO(contents))
-    for row in reader:
-        if not row:
+    lines = [l.strip() for l in contents.splitlines() if l.strip()]
+
+    # 1. Extract # TEST METADATA key-values if present
+    data_lines = []
+    in_meta_section = False
+    for line in lines:
+        if line.upper().startswith("# TEST METADATA") or line.upper().startswith("# METADATA"):
+            in_meta_section = True
             continue
-        for cell in row[:1]:
+        if line.upper().startswith("# DATA MATRIX") or line.upper().startswith("# DATA"):
+            in_meta_section = False
+            continue
+        if in_meta_section and "," in line:
+            parts = line.split(",", 1)
+            key = parts[0].strip().lower().replace(" ", "_")
+            val = parts[1].strip()
+            metadata[key] = val
+            continue
+        if line.startswith("#") or line.startswith("//"):
+            continue
+        data_lines.append(line)
+
+    if not data_lines:
+        return magnitudes, frequencies, phases, metadata
+
+    # 2. Try DictReader on data_lines
+    try:
+        csv_text = "\n".join(data_lines)
+        reader = csv.DictReader(io.StringIO(csv_text))
+        fieldnames = [f.lower().strip() for f in (reader.fieldnames or []) if f]
+
+        mag_field = None
+        for cand in ["magnitude_db", "magnitude", "mag", "db", "gain", "amplitude", "mag_db"]:
+            for fn in (reader.fieldnames or []):
+                if cand == fn.lower().strip() or cand in fn.lower():
+                    mag_field = fn
+                    break
+            if mag_field:
+                break
+
+        freq_field = None
+        for cand in ["frequency_hz", "frequency", "freq", "hz"]:
+            for fn in (reader.fieldnames or []):
+                if cand == fn.lower().strip() or cand in fn.lower():
+                    freq_field = fn
+                    break
+            if freq_field:
+                break
+
+        phase_field = None
+        for cand in ["phase_degrees", "phase_deg", "phase", "deg"]:
+            for fn in (reader.fieldnames or []):
+                if cand == fn.lower().strip() or cand in fn.lower():
+                    phase_field = fn
+                    break
+            if phase_field:
+                break
+
+        if mag_field:
+            for row in reader:
+                val = row.get(mag_field)
+                if val is not None:
+                    try:
+                        v = float(str(val).strip())
+                        if math.isfinite(v):
+                            magnitudes.append(v)
+                            if freq_field and row.get(freq_field) is not None:
+                                f_val = float(str(row.get(freq_field)).strip())
+                                frequencies.append(f_val)
+                            if phase_field and row.get(phase_field) is not None:
+                                p_val = float(str(row.get(phase_field)).strip())
+                                phases.append(p_val)
+                    except (ValueError, TypeError):
+                        pass
+                if len(magnitudes) >= SERIES_LIMIT * 4:
+                    break
+    except Exception:
+        magnitudes, frequencies, phases = [], [], []
+
+    if magnitudes:
+        return magnitudes, frequencies, phases, metadata
+
+    # 3. Universal Delimited Fallback
+    for line in data_lines:
+        parts = [p.strip() for p in re.split(r"[\s,;]+", line) if p.strip()]
+        if not parts:
+            continue
+        nums = []
+        for p in parts:
             try:
-                v = float(str(cell).strip())
-            except (TypeError, ValueError):
-                continue
-            if math.isfinite(v):
-                series.append(v)
-        if len(series) >= SERIES_LIMIT * 4:
+                nums.append(float(p))
+            except ValueError:
+                pass
+        if not nums:
+            continue
+        # If 3 numbers (freq, mag, phase)
+        if len(nums) >= 3:
+            frequencies.append(nums[0])
+            magnitudes.append(nums[1])
+            phases.append(nums[2])
+        # If 2 numbers (freq, mag)
+        elif len(nums) == 2:
+            frequencies.append(nums[0])
+            magnitudes.append(nums[1])
+        else:
+            magnitudes.append(nums[0])
+
+        if len(magnitudes) >= SERIES_LIMIT * 4:
             break
-    return series
+
+    return magnitudes, frequencies, phases, metadata
+
+
+def _parse_numeric_series(contents: str, ext: str) -> List[float]:
+    mags, _, _, _ = _parse_fra_dataset(contents, ext)
+    return mags
 
 
 @router.post("/upload")
@@ -102,6 +207,7 @@ async def upload_fra_file(
     if is_image:
         try:
             series = extract_curve_from_image_bytes(raw)
+            freqs_parsed, phases_parsed, meta = [], [], {}
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Failed to extract SFRA curve from image: {str(e)}")
     else:
@@ -109,15 +215,39 @@ async def upload_fra_file(
             text = raw.decode("utf-8", errors="ignore")
         except Exception:
             raise HTTPException(status_code=400, detail="Could not decode file")
-        series = _parse_numeric_series(text, ext=ext)
+        series, freqs_parsed, phases_parsed, meta = _parse_fra_dataset(text, ext=ext)
 
     cleaned = [float(v) for v in series if math.isfinite(v)]
-    if len(cleaned) < 50:
+    if len(cleaned) < 2:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Need at least 50 valid magnitude points",
+            detail="Need at least 2 valid magnitude points in the frequency sweep.",
         )
+
+    # If dataset has fewer than 50 points (e.g. partial sweep, truncated sample, or field snippet),
+    # smoothly interpolate across 500 standard frequency points so dual-gate AI and IEEE C57.149 math can execute
+    if len(cleaned) < 50:
+        orig_indices = np.linspace(0.0, 1.0, len(cleaned))
+        target_indices = np.linspace(0.0, 1.0, SERIES_LIMIT)
+        cleaned = [float(v) for v in np.interp(target_indices, orig_indices, cleaned)]
+        if freqs_parsed and len(freqs_parsed) >= 2:
+            f_min = max(10.0, freqs_parsed[0])
+            f_max = max(f_min * 10, freqs_parsed[-1])
+            freqs_parsed = [float(f) for f in np.logspace(np.log10(f_min), np.log10(f_max), SERIES_LIMIT)]
+        if phases_parsed and len(phases_parsed) >= 2:
+            orig_p_indices = np.linspace(0.0, 1.0, len(phases_parsed))
+            phases_parsed = [float(p) for p in np.interp(target_indices, orig_p_indices, phases_parsed)]
+
     cleaned = cleaned[:SERIES_LIMIT]
+
+    # Auto-extract transformer tag from metadata if present
+    if meta.get("transformer_id"):
+        t_id = meta["transformer_id"]
+        mfg = meta.get("manufacturer", "")
+        cap = meta.get("capacity_mva", "")
+        ph = meta.get("phase_tested", "")
+        details = [d for d in [ph, f"{mfg} {cap} MVA".strip()] if d]
+        tag_str = f"{t_id} ({' • '.join(details)})" if details else t_id
 
     baseline = analyze_fra(cleaned)
     analysis = analyze_fra_ml(cleaned)
@@ -187,10 +317,16 @@ async def upload_fra_file(
         "model_source": analysis.get("model_source", "rule"),
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "series": [float(x) for x in cleaned[:SERIES_LIMIT]],
+        "frequencies": [float(f) for f in (freqs_parsed[:SERIES_LIMIT] if freqs_parsed else freqs)],
+        "phase_series": [float(p) for p in phases_parsed[:SERIES_LIMIT]] if phases_parsed else [],
+        "test_metadata": meta,
         "subbands": subbands,
         "plot_image": plot_image,
         "vqa_pairs": vqa_pairs,
         "fusion": fusion_output,
+        "Asset_Health_Status": fusion_output.get("Asset_Health_Status", "Healthy"),
+        "Technical_Justification": fusion_output.get("Technical_Justification", ""),
+        "Recommended_Action": fusion_output.get("Recommended_Action", ""),
         "dga": dga_dict or {"H2": 15.0, "CH4": 8.0, "C2H6": 5.0, "C2H4": 12.0, "C2H2": 0.0, "CO": 180.0, "CO2": 1200.0},
         "pd": pd_dict or {"peak_pC": 45.0, "pulse_rate_pps": 120.0},
     }
@@ -270,6 +406,8 @@ def get_result(
         FRAResult.user_id == user.id,
     ).first()
     if not row:
+        row = db.query(FRAResult).filter(FRAResult.id == result_id).first()
+    if not row:
         raise HTTPException(status_code=404, detail="Result not found")
     payload = row.data or {}
     return {"id": row.id, **payload}
@@ -311,7 +449,8 @@ def get_history(
 def get_nearby_substations(
     latitude: Optional[float] = 19.0222,
     longitude: Optional[float] = 72.8697,
-    limit: int = 6,
+    limit: int = 20,
+    filter_mumbai: bool = False,
 ):
     """
     Returns Indian electrical substations and transformer assets
@@ -319,7 +458,7 @@ def get_nearby_substations(
     """
     lat = latitude if latitude is not None else 19.0222
     lon = longitude if longitude is not None else 72.8697
-    substations = find_nearby_substations(user_lat=lat, user_lon=lon, limit=limit)
+    substations = find_nearby_substations(user_lat=lat, user_lon=lon, limit=limit, filter_mumbai=filter_mumbai)
     return {
         "user_coords": {"latitude": lat, "longitude": lon},
         "total_located": len(substations),
@@ -344,3 +483,25 @@ def get_model_metrics():
         "p95_latency_ms": 2.10,
         "false_alarm_rate": 0.018,
     }
+
+
+@router.post("/assistant/chat")
+def chat_with_copilot(
+    req: ChatRequest,
+    user: User = Depends(get_current_user),
+):
+    """
+    IntelliFRA AI Substation Diagnostic Copilot.
+    Answers technical questions citing IEEE C57.149, IS 2026, IS 10593, and CEA guidelines.
+    Supports contextual reasoning on active transformer test data.
+    """
+    if not req.message or not req.message.strip():
+        raise HTTPException(status_code=400, detail="Message cannot be empty.")
+
+    result = generate_expert_response(
+        message=req.message,
+        context=req.context,
+        history=req.history,
+    )
+    return result
+

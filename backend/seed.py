@@ -1,4 +1,4 @@
-from auth import pwd_context
+from auth import hash_password
 from database import SessionLocal
 from models import User
 
@@ -11,7 +11,7 @@ def seed_demo_user() -> None:
     db = SessionLocal()
     try:
         user = db.query(User).filter(User.email == DEMO_EMAIL).first()
-        hashed = pwd_context.hash(DEMO_PASSWORD)
+        hashed = hash_password(DEMO_PASSWORD)
         if user:
             user.name = DEMO_NAME
             user.password = hashed

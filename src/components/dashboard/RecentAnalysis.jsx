@@ -1,135 +1,173 @@
-import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
+import { useTheme } from '../../lib/theme'
 
-export default function RecentAnalysis({ history = [], title = 'Recent Analyses' }) {
+export default function RecentAnalysis({ history = [], title = 'Recent Substation Diagnostic Records' }) {
   const navigate = useNavigate()
+  const { isDark } = useTheme()
+
   const rows = (Array.isArray(history) ? history : [])
-    .slice(0, 5)
+    .slice(0, 8)
     .map((item) => ({
       id: item.id,
-      filename: item.filename || 'Unknown file',
-      classification: item.classification || '—',
-      date: item.timestamp ? new Date(typeof item.timestamp === 'number' ? item.timestamp : item.timestamp).toLocaleString() : '—',
-      risk: item.classification === 'High Fault Risk' ? 'high' : 'low',
+      filename: item.filename || 'SFRA_Sweep_Measurement',
+      classification: item.classification || 'Normal',
+      date: item.timestamp ? new Date(typeof item.timestamp === 'number' ? item.timestamp : item.timestamp).toLocaleDateString() : 'Today',
+      time: item.timestamp ? new Date(typeof item.timestamp === 'number' ? item.timestamp : item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '',
+      isCritical: item.classification === 'High Fault Risk' || item.classification === 'Critical Action Required',
     }))
-  const latestId = rows?.[0]?.id || null
+
+  const containerBg = isDark ? '#111827' : '#FFFFFF'
+  const containerBorder = isDark ? '#1F2937' : '#E2E8F0'
+  const textMuted = isDark ? '#9CA3AF' : '#64748B'
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+    <div
       style={{
-        borderRadius: '20px',
-        background: 'rgba(255,255,255,0.025)',
-        border: '1px solid rgba(255,255,255,0.07)',
-        backdropFilter: 'blur(20px)',
+        borderRadius: '8px',
+        backgroundColor: containerBg,
+        border: `1px solid ${containerBorder}`,
         overflow: 'hidden',
       }}
     >
-      <div style={{
-        padding: '20px 24px',
-        borderBottom: '1px solid rgba(255,255,255,0.06)',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#00D4FF', boxShadow: '0 0 8px #00D4FF', animation: 'pulse-dot 2s infinite' }} />
-          <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#fff', margin: 0 }}>{title}</h3>
-          <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 10px', borderRadius: '100px', background: 'rgba(108,99,255,0.12)', border: '1px solid rgba(108,99,255,0.25)', color: '#A29BFF' }}>
-            {rows.length} records
+      {/* Header */}
+      <div
+        style={{
+          padding: '16px 20px',
+          borderBottom: `1px solid ${containerBorder}`,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ fontSize: '15px', fontWeight: 800 }}>{title}</span>
+          <span
+            style={{
+              fontSize: '11px',
+              fontWeight: 700,
+              padding: '2px 8px',
+              borderRadius: '4px',
+              backgroundColor: isDark ? '#1F2937' : '#F1F5F9',
+              border: `1px solid ${isDark ? '#374151' : '#CBD5E1'}`,
+              color: textMuted,
+            }}
+          >
+            {rows.length} logs
           </span>
         </div>
+
         <button
-          onClick={() => navigate(latestId ? `/results/${latestId}` : '/upload')}
+          onClick={() => navigate('/upload')}
           style={{
-            fontSize: '12px', fontWeight: 600, color: '#00D4FF',
-            background: 'none', border: 'none', cursor: 'pointer',
-            display: 'flex', alignItems: 'center', gap: '4px', fontFamily: 'inherit',
-            padding: '6px 10px', borderRadius: '8px', transition: 'background 0.2s',
+            fontSize: '12px',
+            fontWeight: 700,
+            color: '#0284C7',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
           }}
-          onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,212,255,0.08)'}
-          onMouseLeave={e => e.currentTarget.style.background = 'none'}
         >
-          View all
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
+          + Upload New Sweep
         </button>
       </div>
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '2fr 1fr 1fr 1fr 80px 80px',
-        gap: '12px',
-        padding: '10px 24px',
-        borderBottom: '1px solid rgba(255,255,255,0.04)',
-      }}>
-        {['File Name', 'Transformer', 'Date', 'Classification', 'Risk', ''].map((h) => (
-          <div key={h} style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)' }}>
-            {h}
-          </div>
-        ))}
+
+      {/* Table Header */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '2fr 1.2fr 1fr 100px',
+          padding: '10px 20px',
+          backgroundColor: isDark ? '#1F2937' : '#F8FAFC',
+          borderBottom: `1px solid ${containerBorder}`,
+          fontSize: '11px',
+          fontWeight: 800,
+          color: textMuted,
+          letterSpacing: '0.05em',
+          textTransform: 'uppercase',
+        }}
+      >
+        <div>Measurement File</div>
+        <div>Date & Timestamp</div>
+        <div>Status / Diagnosis</div>
+        <div style={{ textAlign: 'right' }}>Action</div>
       </div>
-      <div style={{ padding: '0 0 8px' }}>
-        {rows.length === 0 ? (
-          <div style={{ padding: '24px', color: 'rgba(255,255,255,0.5)' }}>No uploads yet.</div>
-        ) : rows.map((row, i) => {
-          const high = (row.risk || '').toLowerCase() === 'high'
-          return (
-            <div
-              key={row.id}
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '2fr 1fr 1fr 1fr 80px 80px',
-                gap: '12px',
-                padding: '14px 24px',
-                alignItems: 'center',
-                borderBottom: i < rows.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
-                <div style={{ width: '32px', height: '32px', borderRadius: '8px', flexShrink: 0, background: 'rgba(0,212,255,0.08)', border: '1px solid rgba(0,212,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(0,212,255,0.8)" strokeWidth="1.8">
-                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" strokeLinecap="round" strokeLinejoin="round"/>
-                    <polyline points="14,2 14,8 20,8" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </div>
-                <span style={{ fontSize: '12.5px', color: 'rgba(255,255,255,0.8)', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {row.filename}
-                </span>
-              </div>
-              <span style={{ fontSize: '12.5px', color: 'rgba(255,255,255,0.55)', fontFamily: 'monospace' }}>{row.transformer || '-'}</span>
-              <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>{row.date}</span>
-              <span style={{ fontSize: '12.5px', color: 'rgba(255,255,255,0.7)', fontWeight: 500 }}>{row.classification}</span>
-              <div>
-                <span style={{
-                  fontSize: '10px', fontWeight: 700, letterSpacing: '0.06em',
-                  padding: '4px 10px', borderRadius: '100px',
-                  background: high ? 'rgba(255,60,60,0.12)' : 'rgba(0,212,255,0.1)',
-                  border: high ? '1px solid rgba(255,60,60,0.35)' : '1px solid rgba(0,212,255,0.3)',
-                  color: high ? '#FF5555' : '#00D4FF', whiteSpace: 'nowrap',
-                }}>
-                  {high ? 'High Risk' : 'Low Risk'}
-                </span>
-              </div>
-              <div>
-                <motion.button
-                  whileHover={{ scale: 1.06 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => navigate(`/results/${row.id}`)}
-                  style={{
-                    padding: '6px 14px', borderRadius: '8px', fontSize: '11.5px', fontWeight: 600,
-                    background: 'rgba(0,212,255,0.08)', border: '1px solid rgba(0,212,255,0.2)',
-                    color: '#00D4FF', cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap',
-                  }}
-                >
-                  View →
-                </motion.button>
-              </div>
+
+      {/* Rows */}
+      {rows.length === 0 ? (
+        <div style={{ padding: '32px', textAlign: 'center', color: textMuted, fontSize: '14px' }}>
+          No substation analyses recorded yet. Click <strong>Upload New Sweep</strong> to evaluate an SFRA curve.
+        </div>
+      ) : (
+        rows.map((row, idx) => (
+          <div
+            key={row.id || idx}
+            onClick={() => row.id && navigate(`/results/${row.id}`)}
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '2fr 1.2fr 1fr 100px',
+              padding: '14px 20px',
+              alignItems: 'center',
+              borderBottom: idx < rows.length - 1 ? `1px solid ${isDark ? '#1F2937' : '#F1F5F9'}` : 'none',
+              cursor: row.id ? 'pointer' : 'default',
+              transition: 'background-color 0.15s',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.backgroundColor = isDark ? '#1E293B' : '#F8FAFC'
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.backgroundColor = 'transparent'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{ fontSize: '16px' }}>📄</span>
+              <span style={{ fontSize: '13.5px', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {row.filename}
+              </span>
             </div>
-          )
-        })}
-      </div>
-    </motion.div>
+
+            <div style={{ fontSize: '12.5px', color: textMuted, fontFamily: "'JetBrains Mono', monospace" }}>
+              {row.date} {row.time}
+            </div>
+
+            <div>
+              <span
+                style={{
+                  fontSize: '11.5px',
+                  fontWeight: 700,
+                  padding: '3px 8px',
+                  borderRadius: '4px',
+                  backgroundColor: row.isCritical ? 'rgba(239,68,68,0.1)' : 'rgba(16,185,129,0.1)',
+                  color: row.isCritical ? '#EF4444' : '#10B981',
+                  border: `1px solid ${row.isCritical ? '#EF4444' : '#10B981'}`,
+                }}
+              >
+                {row.classification}
+              </span>
+            </div>
+
+            <div style={{ textAlign: 'right' }}>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  if (row.id) navigate(`/results/${row.id}`)
+                }}
+                style={{
+                  padding: '5px 10px',
+                  borderRadius: '4px',
+                  background: isDark ? '#1F2937' : '#F1F5F9',
+                  border: `1px solid ${isDark ? '#374151' : '#CBD5E1'}`,
+                  color: '#0284C7',
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                }}
+              >
+                Open →
+              </button>
+            </div>
+          </div>
+        ))
+      )}
+    </div>
   )
 }
-

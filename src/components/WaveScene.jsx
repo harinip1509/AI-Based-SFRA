@@ -58,9 +58,7 @@ function ParticleGrid({ cols, rows, spacingX, spacingZ, baseY, color, size, opac
       const dist = Math.sqrt((x - mx) ** 2 + (z - mz) ** 2)
       const mripple = Math.exp(-dist * dist * 0.04) * Math.sin(dist * 0.8 - t * 4) * 1.2
 
-      pos[i*3]   = x
       pos[i*3+1] = baseY + w1 + w2 + w3 + mripple
-      pos[i*3+2] = z
     }
     ref.current.geometry.attributes.position.needsUpdate = true
   })
@@ -72,7 +70,6 @@ function ParticleGrid({ cols, rows, spacingX, spacingZ, baseY, color, size, opac
         size={size}
         transparent
         opacity={opacity}
-        blending={THREE.AdditiveBlending}
         depthWrite={false}
         sizeAttenuation
       />
@@ -81,72 +78,77 @@ function ParticleGrid({ cols, rows, spacingX, spacingZ, baseY, color, size, opac
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// WaveLines — horizontal bright crest lines along the grid,
-//             rendered as ribbon meshes (real thickness)
+// WaveCrestLine — draws continuous glowing crest lines parallel to camera
 // ─────────────────────────────────────────────────────────────────────────────
-function WaveCrestLine({ zRow, color, opacity, thickness, xSpan = 14 }) {
-  const meshRef = useRef()
-  const SEG     = 300
-  const VERTS   = (SEG + 1) * 2
+function WaveCrestLine({ zRow, color, opacity, thickness = 0.06, xSpan = 24 }) {
+  const ref = useRef()
+  const segments = 120
 
-  const { positions, indices } = useMemo(() => {
-    const pos = new Float32Array(VERTS * 3)
-    const idx = []
-    for (let i = 0; i <= SEG; i++) {
-      if (i < SEG) {
-        const a = i*2, b = i*2+1, c = (i+1)*2, d = (i+1)*2+1
-        idx.push(a,b,c, b,d,c)
-      }
+  const { xs, baseZ } = useMemo(() => {
+    const arr = new Float32Array(segments)
+    for (let i = 0; i < segments; i++) {
+      arr[i] = (i / (segments - 1) - 0.5) * xSpan
     }
-    return { positions: pos, indices: new Uint32Array(idx) }
-  }, [])
+    return { xs: arr, baseZ: zRow }
+  }, [zRow, segments, xSpan])
+
+  const initialPositions = useMemo(() => {
+    const pos = new Float32Array(segments * 3)
+    for (let i = 0; i < segments; i++) {
+      pos[i*3]   = xs[i]
+      pos[i*3+1] = 0
+      pos[i*3+2] = baseZ
+    }
+    return pos
+  }, [xs, baseZ, segments])
 
   const geo = useMemo(() => {
     const g = new THREE.BufferGeometry()
-    g.setAttribute('position', new THREE.BufferAttribute(positions, 3))
-    g.setIndex(new THREE.BufferAttribute(indices, 1))
+    g.setAttribute('position', new THREE.BufferAttribute(initialPositions, 3))
     return g
-  }, [positions, indices])
+  }, [initialPositions])
 
   useFrame(({ clock }) => {
     const t   = clock.getElapsedTime()
-    const pos = meshRef.current.geometry.attributes.position.array
-    const half = thickness * 0.5
+    const pos = ref.current.geometry.attributes.position.array
+    for (let i = 0; i < segments; i++) {
+      const x = xs[i]
+      const z = baseZ
 
-    for (let i = 0; i <= SEG; i++) {
-      const x    = (i / SEG) * (xSpan * 2) - xSpan
-      const z    = zRow
-      const w1   = Math.sin(z * 0.55 + t * 0.9) * 1.4
-      const w2   = Math.sin(x * 0.30 + z * 0.20 + t * 0.65) * 0.8
-      const w3   = Math.sin(x * 0.6  + z * 0.8  + t * 1.4)  * 0.3
-      const mx   = mouse.x * 6
-      const mz   = mouse.y * -4
+      const w1 = Math.sin(z * 0.55 + t * 0.9) * 1.4
+      const w2 = Math.sin(x * 0.30 + z * 0.20 + t * 0.65) * 0.8
+      const w3 = Math.sin(x * 0.6 + z * 0.8 + t * 1.4) * 0.3
+
+      const mx = mouse.x * 6
+      const mz = mouse.y * -4
       const dist = Math.sqrt((x - mx) ** 2 + (z - mz) ** 2)
-      const mr   = Math.exp(-dist * dist * 0.04) * Math.sin(dist * 0.8 - t * 4) * 1.2
-      const cy   = w1 + w2 + w3 + mr
+      const mripple = Math.exp(-dist * dist * 0.04) * Math.sin(dist * 0.8 - t * 4) * 1.2
 
-      pos[(i*2)  *3]   = x;  pos[(i*2)  *3+1] = cy + half;  pos[(i*2)  *3+2] = z
-      pos[(i*2+1)*3]   = x;  pos[(i*2+1)*3+1] = cy - half;  pos[(i*2+1)*3+2] = z
+      pos[i*3+1] = w1 + w2 + w3 + mripple + 0.06
     }
-    meshRef.current.geometry.attributes.position.needsUpdate = true
+    ref.current.geometry.attributes.position.needsUpdate = true
   })
 
   return (
-    <mesh ref={meshRef} geometry={geo} renderOrder={2}>
-      <meshBasicMaterial
-        color={color} transparent opacity={opacity}
-        blending={THREE.AdditiveBlending} depthWrite={false} side={THREE.DoubleSide}
+    <line ref={ref} geometry={geo}>
+      <lineBasicMaterial
+        color={color}
+        transparent
+        opacity={opacity}
+        linewidth={thickness}
+        depthWrite={false}
       />
-    </mesh>
+    </line>
   )
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Floating ambient particles (bokeh / depth haze)
+// AmbientParticles — slow floating motes
 // ─────────────────────────────────────────────────────────────────────────────
-function AmbientParticles() {
-  const ref   = useRef()
-  const count = 180
+function AmbientParticles({ isDark = true }) {
+  const ref = useRef()
+  const count = 140
+
   const { positions, speeds, phases } = useMemo(() => {
     const pos = new Float32Array(count * 3)
     const spd = new Float32Array(count)
@@ -177,8 +179,14 @@ function AmbientParticles() {
       <bufferGeometry>
         <bufferAttribute attach="attributes-position" count={count} array={positions} itemSize={3} />
       </bufferGeometry>
-      <pointsMaterial color="#00D4FF" size={0.08} transparent opacity={0.4}
-        blending={THREE.AdditiveBlending} depthWrite={false} sizeAttenuation />
+      <pointsMaterial
+        color={isDark ? '#00D4FF' : '#0284C7'}
+        size={0.08}
+        transparent
+        opacity={isDark ? 0.4 : 0.35}
+        depthWrite={false}
+        sizeAttenuation
+      />
     </points>
   )
 }
@@ -186,7 +194,7 @@ function AmbientParticles() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Scene
 // ─────────────────────────────────────────────────────────────────────────────
-export default function WaveScene() {
+export default function WaveScene({ isDark = true }) {
   useFrame(({ camera }) => {
     // Camera tilts slightly to follow mouse — subtle parallax
     camera.position.x += (mouse.x * 1.2  - camera.position.x) * 0.028
@@ -200,54 +208,78 @@ export default function WaveScene() {
 
   return (
     <>
-      <color attach="background" args={['#020810']} />
+      <color attach="background" args={[isDark ? '#020810' : '#F1F5F9']} />
 
-      {/* ── PARTICLE GRID — the core 3D wave surface ──
-            Tilt the whole scene group so it looks like a perspective ocean
-      ── */}
+      {/* ── PARTICLE GRID — the core 3D wave surface ── */}
       <group rotation={[0.52, 0, 0]} position={[0, -1.8, -2]}>
 
-        {/* Deep background grid — large, sparse, dark blue */}
+        {/* Deep background grid */}
         <ParticleGrid
           cols={132} rows={72} spacingX={0.30} spacingZ={0.30}
-          baseY={0} color="#003A5C" size={0.055} opacity={0.55}
+          baseY={0}
+          color={isDark ? '#003A5C' : '#CBD5E1'}
+          size={0.055}
+          opacity={isDark ? 0.55 : 0.65}
         />
 
-        {/* Mid grid — medium density, brighter teal */}
+        {/* Mid grid */}
         <ParticleGrid
           cols={120} rows={64} spacingX={0.30} spacingZ={0.30}
-          baseY={0.02} color="#005F88" size={0.068} opacity={0.70}
+          baseY={0.02}
+          color={isDark ? '#005F88' : '#94A3B8'}
+          size={0.068}
+          opacity={isDark ? 0.70 : 0.75}
         />
 
-        {/* Foreground grid — dense, bright cyan */}
+        {/* Foreground grid */}
         <ParticleGrid
           cols={108} rows={56} spacingX={0.30} spacingZ={0.30}
-          baseY={0.04} color="#00AADD" size={0.082} opacity={0.85}
+          baseY={0.04}
+          color={isDark ? '#00AADD' : '#0284C7'}
+          size={0.082}
+          opacity={isDark ? 0.85 : 0.85}
         />
 
         {/* Brightest top-layer dots */}
         <ParticleGrid
           cols={98} rows={48} spacingX={0.31} spacingZ={0.31}
-          baseY={0.06} color="#40CCFF" size={0.10} opacity={0.9}
+          baseY={0.06}
+          color={isDark ? '#40CCFF' : '#0369A1'}
+          size={0.10}
+          opacity={0.9}
         />
 
-        {/* Crest highlight lines — the bright wave ridges in the image */}
+        {/* Crest highlight lines */}
         {crests.map((z) => (
-          <WaveCrestLine key={z} zRow={z} color="#00D4FF" opacity={0.75} thickness={0.09} xSpan={crestXSpan} />
+          <WaveCrestLine
+            key={z}
+            zRow={z}
+            color={isDark ? '#00D4FF' : '#0284C7'}
+            opacity={isDark ? 0.75 : 0.8}
+            thickness={0.09}
+            xSpan={crestXSpan}
+          />
         ))}
         {crests.map((z) => (
-          <WaveCrestLine key={`w${z}`} zRow={z + 0.04} color="#AAEEFF" opacity={0.35} thickness={0.04} xSpan={crestXSpan} />
+          <WaveCrestLine
+            key={`w${z}`}
+            zRow={z + 0.04}
+            color={isDark ? '#AAEEFF' : '#1D4ED8'}
+            opacity={isDark ? 0.35 : 0.4}
+            thickness={0.04}
+            xSpan={crestXSpan}
+          />
         ))}
       </group>
 
       {/* Ambient floating bokeh above */}
-      <AmbientParticles />
+      <AmbientParticles isDark={isDark} />
 
       {/* Lighting */}
-      <ambientLight intensity={0.04} color="#00AAFF" />
-      <pointLight position={[0,  6, 2]} intensity={2.5} color="#00D4FF" />
-      <pointLight position={[-8, 4, 0]} intensity={1.0} color="#0055FF" />
-      <pointLight position={[8,  3, -4]} intensity={0.8} color="#00AAFF" />
+      <ambientLight intensity={isDark ? 0.04 : 0.8} color={isDark ? '#00AAFF' : '#FFFFFF'} />
+      <pointLight position={[0,  6, 2]} intensity={isDark ? 2.5 : 2.0} color={isDark ? '#00D4FF' : '#0284C7'} />
+      <pointLight position={[-8, 4, 0]} intensity={isDark ? 1.0 : 1.2} color={isDark ? '#0055FF' : '#38BDF8'} />
+      <pointLight position={[8,  3, -4]} intensity={isDark ? 0.8 : 0.9} color={isDark ? '#00AAFF' : '#0EA5E9'} />
     </>
   )
 }

@@ -1,107 +1,161 @@
-import { motion } from 'framer-motion'
-import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTheme } from '../lib/theme'
 
 export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false)
   const navigate = useNavigate()
+  const { toggleTheme, isDark, seniorMode, toggleSeniorMode } = useTheme()
   const hasToken = () => Boolean(localStorage.getItem('token'))
 
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40)
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
+  const sectionLinks = [
+    { label: 'Capabilities', href: '#features' },
+    { label: 'Architecture', href: '#process' },
+    { label: 'Technology', href: '#technology' },
+    { label: 'About', href: '#about' },
+  ]
 
   return (
-    <motion.nav
-      initial={{ y: -80, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.7, ease: 'easeOut' }}
+    <nav
       style={{
-        position: 'fixed',
+        position: 'sticky',
         top: 0,
-        left: 0,
-        right: 0,
         zIndex: 50,
-        padding: '0 48px',
-        height: '64px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        transition: 'background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease',
-        background: scrolled ? 'rgba(11,15,26,0.85)' : 'transparent',
-        backdropFilter: scrolled ? 'blur(20px)' : 'none',
-        WebkitBackdropFilter: scrolled ? 'blur(20px)' : 'none',
-        borderBottom: scrolled ? '1px solid rgba(255,255,255,0.06)' : '1px solid transparent',
-        boxShadow: scrolled ? '0 4px 40px rgba(0,212,255,0.06)' : 'none',
+        padding: '0 32px',
+        height: '62px',
+        backgroundColor: isDark ? 'rgba(17, 24, 39, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+        backdropFilter: 'blur(10px)',
+        borderBottom: `1px solid ${isDark ? '#1F2937' : '#E2E8F0'}`,
+        color: isDark ? '#F9FAFB' : '#0F172A',
+        transition: 'background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease',
       }}
     >
-      {/* Logo */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
+      {/* Brand */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }} onClick={() => navigate('/')}>
         <div style={{
-          width: '32px', height: '32px', borderRadius: '8px',
-          background: 'linear-gradient(135deg,#00D4FF,#6C63FF)',
-          boxShadow: '0 0 16px rgba(0,212,255,0.5)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          width: '30px',
+          height: '30px',
+          borderRadius: '6px',
+          background: '#0284C7',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#FFFFFF',
+          fontWeight: 800,
+          fontSize: '15px',
         }}>
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
-            <path d="M12 2L2 7l10 5 10-5-10-5z" stroke="#fff" strokeWidth="1.6" strokeLinejoin="round"/>
-            <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="#fff" strokeWidth="1.6" strokeLinejoin="round"/>
-          </svg>
+          ⚡
         </div>
-        <span style={{ fontSize: '19px', fontWeight: 800, color: '#fff', letterSpacing: '-0.3px' }}>
-          Intelli<span style={{ color: '#00D4FF' }}>FRA</span>
-        </span>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <span style={{ fontSize: '18px', fontWeight: 800, letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+            Intelli<span style={{ color: '#0284C7' }}>FRA</span>
+          </span>
+          <span style={{ fontSize: '10px', color: isDark ? '#9CA3AF' : '#64748B', fontWeight: 600, letterSpacing: '0.04em' }}>
+            CEA / IS 2026 SUBSTATION ASSET PLATFORM
+          </span>
+        </div>
       </div>
 
-      {/* Nav links */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '36px' }}>
-        {['Features', 'Technology', 'About'].map((link) => (
+      {/* Public Landing Section Anchor Links */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        {sectionLinks.map(({ label, href }) => (
           <a
-            key={link}
-            href={`#${link.toLowerCase()}`}
+            key={label}
+            href={href}
             style={{
-              fontSize: '14px',
-              fontWeight: 500,
-              color: 'rgba(255,255,255,0.6)',
+              padding: '7px 14px',
+              borderRadius: '6px',
+              background: 'transparent',
+              fontSize: '13px',
+              fontWeight: 600,
+              color: isDark ? '#D1D5DB' : '#475569',
               textDecoration: 'none',
-              position: 'relative',
-              paddingBottom: '2px',
-              transition: 'color 0.2s ease',
+              cursor: 'pointer',
+              transition: 'color 0.15s ease',
             }}
-            onMouseEnter={e => e.currentTarget.style.color = '#fff'}
-            onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.6)'}
+            onMouseEnter={e => e.currentTarget.style.color = '#0284C7'}
+            onMouseLeave={e => e.currentTarget.style.color = isDark ? '#D1D5DB' : '#475569'}
           >
-            {link}
+            {label}
           </a>
         ))}
       </div>
 
-      {/* Actions */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
+      {/* Actions: Senior Mode, Theme Toggle, Login & Sign Up */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        {/* Senior Mode Toggle (Aa+ / 👁️) */}
         <button
-          style={{ fontSize: '13px', fontWeight: 600, color: '#38BDF8', background: 'rgba(56,189,248,0.1)', border: '1px solid rgba(56,189,248,0.25)', borderRadius: '6px', cursor: 'pointer', padding: '6px 12px' }}
-          onClick={() => navigate('/substations')}
+          onClick={toggleSeniorMode}
+          title={seniorMode ? 'Disable Senior Field Mode' : 'Enable Senior Field Mode (High-contrast, +20% font scaling for field inspection)'}
+          style={{
+            padding: '6px 12px',
+            borderRadius: '6px',
+            background: seniorMode ? '#0284C7' : (isDark ? '#1F2937' : '#F1F5F9'),
+            border: `1.5px solid ${seniorMode ? '#0284C7' : (isDark ? '#374151' : '#CBD5E1')}`,
+            color: seniorMode ? '#FFFFFF' : (isDark ? '#F3F4F6' : '#1E293B'),
+            fontSize: '12px',
+            fontWeight: 800,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '5px',
+          }}
         >
-          🛰️ Substation Radar
+          <span>👁️ Aa+</span>
+          <span style={{ fontSize: '11px', display: 'inline-block' }}>{seniorMode ? 'Senior ON' : 'Senior'}</span>
         </button>
+
+        {/* Theme Toggle */}
         <button
-          style={{ fontSize: '14px', fontWeight: 500, color: 'rgba(255,255,255,0.7)', background: 'none', border: 'none', cursor: 'pointer', padding: '8px 12px' }}
-          onClick={() => navigate(hasToken() ? '/dashboard' : '/login')}
-          onMouseEnter={e => e.currentTarget.style.color = '#fff'}
-          onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.7)'}
+          onClick={toggleTheme}
+          title={`Switch to ${isDark ? 'Light' : 'Dark'} Mode`}
+          style={{
+            padding: '6px 12px',
+            borderRadius: '6px',
+            background: isDark ? '#1F2937' : '#F1F5F9',
+            border: `1px solid ${isDark ? '#374151' : '#CBD5E1'}`,
+            color: isDark ? '#F3F4F6' : '#1E293B',
+            fontSize: '12px',
+            fontWeight: 700,
+            cursor: 'pointer',
+          }}
         >
-          Login
+          {isDark ? '☀️ Light' : '🌙 Dark'}
         </button>
+
         <button
-          className="btn-primary"
-          style={{ color: '#fff', fontWeight: 600, padding: '9px 22px', borderRadius: '10px', fontSize: '14px' }}
-          onClick={() => navigate(hasToken() ? '/dashboard' : '/register')}
+          onClick={() => navigate('/login')}
+          style={{
+            padding: '7px 14px',
+            borderRadius: '6px',
+            background: 'transparent',
+            border: `1px solid ${isDark ? '#374151' : '#CBD5E1'}`,
+            color: isDark ? '#E5E7EB' : '#1E293B',
+            fontSize: '13px',
+            fontWeight: 600,
+            cursor: 'pointer',
+          }}
         >
-          Get Started
+          Sign In
+        </button>
+
+        <button
+          onClick={() => navigate('/register')}
+          style={{
+            padding: '7px 16px',
+            borderRadius: '6px',
+            background: '#0284C7',
+            border: 'none',
+            color: '#FFFFFF',
+            fontSize: '13px',
+            fontWeight: 700,
+            cursor: 'pointer',
+          }}
+        >
+          Create Account
         </button>
       </div>
-    </motion.nav>
+    </nav>
   )
 }

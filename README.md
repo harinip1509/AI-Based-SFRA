@@ -486,3 +486,5 @@ IntelliFRA is a **final-year academic / FYP** project on automated FRA interpret
 - Built with React, FastAPI, PyTorch, and the open-source community.
 
 **Disclaimer:** Synthetic training performance does not guarantee field accuracy. Always validate against measured SFRA before operational or safety-critical use.
+
+# AI-Based-SFRA

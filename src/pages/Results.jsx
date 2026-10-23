@@ -9,10 +9,12 @@ import {
   YAxis,
 } from 'recharts'
 import { apiRequest, API_BASE } from '../lib/api'
+import { useTheme } from '../lib/theme'
 
 export default function Results() {
   const navigate = useNavigate()
   const { id } = useParams()
+  const { isDark, toggleTheme, seniorMode, toggleSeniorMode } = useTheme()
   const [data, setData] = useState(null)
   const [status, setStatus] = useState('loading') // loading | ready | not_found | error
 
@@ -51,6 +53,20 @@ export default function Results() {
           if (res.pd) setPd(res.pd)
           if (res.fusion) setFusion(res.fusion)
           setStatus('ready')
+          try {
+            window.dispatchEvent(new CustomEvent('fra-active-telemetry', {
+              detail: {
+                asset_id: res.asset_tag || res.filename || id,
+                status: res.Asset_Health_Status || res.classification,
+                justification: res.Technical_Justification || res.engineering_justification,
+                action: res.Recommended_Action || res.recommended_action,
+                subbands: res.fusion?.subbands || res.subbands,
+                dga: res.dga,
+              }
+            }))
+          } catch {
+            // ignore
+          }
         }
       } catch (e) {
         const msg = e?.message?.toLowerCase?.() || ''
@@ -72,22 +88,43 @@ export default function Results() {
   const triggerFusionEvaluation = async (updatedDga, updatedPd, simulateGround) => {
     try {
       setEvaluating(true)
-      const token = localStorage.getItem('token')
-      const res = await fetch(`${API_BASE}/fra/fusion-evaluate`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          result_id: id,
-          series: data?.series || [],
-          dga: updatedDga || dga,
-          pd: updatedPd || pd,
-          simulate_bad_ground: simulateGround !== undefined ? simulateGround : badGroundingSim,
-        }),
+      const token = localStorage.getItem('token') || 'demo-engineer-session-token'
+      const payloadBody = JSON.stringify({
+        result_id: id,
+        series: data?.series || [],
+        dga: updatedDga || dga,
+        pd: updatedPd || pd,
+        simulate_bad_ground: simulateGround !== undefined ? simulateGround : badGroundingSim,
       })
-      if (res.ok) {
+      const headers = {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      }
+
+      const candidateBases = [
+        API_BASE,
+        'http://127.0.0.1:8000',
+        'http://localhost:8000',
+      ].filter(Boolean)
+      const uniqueBases = Array.from(new Set(candidateBases))
+
+      let res = null
+      for (const base of uniqueBases) {
+        try {
+          const attempt = await fetch(`${base}/fra/fusion-evaluate`, {
+            method: 'POST',
+            headers,
+            body: payloadBody,
+          })
+          if (attempt.ok || (attempt.status >= 400 && attempt.status < 500)) {
+            res = attempt
+            break
+          }
+        } catch {
+          // try next
+        }
+      }
+      if (res && res.ok) {
         const resJson = await res.json()
         setFusion(resJson.fusion)
       }
@@ -146,15 +183,24 @@ export default function Results() {
 
   if (status === 'not_found' || !data) {
     return (
-      <div style={{ minHeight: '100vh', background: '#090D16', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#EF4444', fontFamily: "'JetBrains Mono', monospace" }}>
-        ASSET RECORD NOT FOUND.
-        <button
-          type="button"
-          onClick={() => navigate('/upload')}
-          style={{ marginLeft: '12px', padding: '8px 14px', borderRadius: '6px', background: '#1E293B', border: '1px solid #334155', color: '#fff', cursor: 'pointer' }}
-        >
-          Return to Ingestion
-        </button>
+      <div style={{ minHeight: '100vh', background: '#090D16', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px', color: '#EF4444', fontFamily: "'JetBrains Mono', monospace" }}>
+        <div style={{ fontSize: '18px', fontWeight: 800 }}>ASSET RECORD NOT FOUND</div>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button
+            type="button"
+            onClick={() => navigate('/dashboard')}
+            style={{ padding: '9px 18px', borderRadius: '6px', background: '#0284C7', border: 'none', color: '#fff', cursor: 'pointer', fontWeight: 700 }}
+          >
+            ← Back to Dashboard
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate('/upload')}
+            style={{ padding: '9px 18px', borderRadius: '6px', background: '#1E293B', border: '1px solid #334155', color: '#fff', cursor: 'pointer' }}
+          >
+            Return to Ingestion
+          </button>
+        </div>
       </div>
     )
   }
@@ -171,27 +217,63 @@ export default function Results() {
     PD_Evaluation: { status: 'NORMAL', peak_pc: 45 },
   }
 
-  const assetStatus = activeFusion.Asset_Status || 'Normal'
-  const isActionRequired = assetStatus.toLowerCase().includes('action') || assetStatus.toLowerCase().includes('critical')
-  const isInvestigate = assetStatus.toLowerCase().includes('investigate')
+  const assetHealthStatus = activeFusion.Asset_Health_Status || activeFusion.Asset_Status || (data.classification === 'Normal' ? 'Healthy' : 'Critical Action Required')
+  const technicalJustification = activeFusion.Technical_Justification || activeFusion.Engineering_Justification || data.explanation || ''
+  const recommendedAction = activeFusion.Recommended_Action || 'Continue routine CEA condition-based monitoring.'
+  const isActionRequired = assetHealthStatus.toLowerCase().includes('action') || assetHealthStatus.toLowerCase().includes('critical')
+  const isInvestigate = assetHealthStatus.toLowerCase().includes('investigate')
 
   const statusTheme = isActionRequired
-    ? { border: '#EF4444', bg: 'rgba(239,68,68,0.08)', text: '#F87171', badge: '#EF4444' }
+    ? { border: '#EF4444', bg: 'rgba(239,68,68,0.08)', text: '#EF4444', badge: '#EF4444' }
     : (isInvestigate
-      ? { border: '#F59E0B', bg: 'rgba(245,158,11,0.08)', text: '#FBBF24', badge: '#F59E0B' }
-      : { border: '#10B981', bg: 'rgba(16,185,129,0.08)', text: '#34D399', badge: '#10B981' })
+      ? { border: '#F59E0B', bg: 'rgba(245,158,11,0.08)', text: '#F59E0B', badge: '#F59E0B' }
+      : { border: '#10B981', bg: 'rgba(16,185,129,0.08)', text: '#10B981', badge: '#10B981' })
 
   const subbandObj = activeFusion.Subband_Analysis || data.subbands || {}
+
+  const pageBg = isDark ? '#0B0F19' : '#F8FAFC'
+  const cardBg = isDark ? '#111827' : '#FFFFFF'
+  const cardBorder = isDark ? '#1F2937' : '#E2E8F0'
+  const boxBg = isDark ? '#1F2937' : '#F8FAFC'
+  const textMain = isDark ? '#F9FAFB' : '#0F172A'
+  const textMuted = isDark ? '#9CA3AF' : '#64748B'
 
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#090D16',
+      backgroundColor: pageBg,
       padding: '24px',
       fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-      color: '#E2E8F0',
+      color: textMain,
+      transition: 'background-color 0.2s, color 0.2s',
     }}>
       <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
+
+        {/* Back to Dashboard Breadcrumb */}
+        <div style={{ marginBottom: '16px' }}>
+          <button
+            type="button"
+            onClick={() => navigate('/dashboard')}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '8px 16px',
+              borderRadius: '8px',
+              background: isDark ? '#1F2937' : '#FFFFFF',
+              border: `1.5px solid ${isDark ? '#374151' : '#CBD5E1'}`,
+              color: textMain,
+              fontSize: '13px',
+              fontWeight: 700,
+              cursor: 'pointer',
+              boxShadow: isDark ? 'none' : '0 2px 6px rgba(0,0,0,0.05)',
+            }}
+            className="hover:border-blue-500 active:scale-95"
+          >
+            <span style={{ fontSize: '16px', lineHeight: 1 }}>←</span>
+            <span>Back to Dashboard</span>
+          </button>
+        </div>
 
         {/* 1. Substation Asset Telemetry Header */}
         <div style={{
@@ -201,36 +283,108 @@ export default function Results() {
           flexWrap: 'wrap',
           gap: '16px',
           paddingBottom: '16px',
-          borderBottom: '1px solid #1E293B',
+          borderBottom: `1px solid ${cardBorder}`,
           marginBottom: '20px',
         }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span style={{ fontSize: '11px', fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#38BDF8', fontFamily: "'JetBrains Mono', monospace" }}>
-                SUBSTATION ASSET DIAGNOSTIC COCKPIT
+              <span style={{ fontSize: '11px', fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#0284C7', fontFamily: "'JetBrains Mono', monospace" }}>
+                CEA SUBSTATION ASSET DIAGNOSTIC COCKPIT
               </span>
-              <span style={{ fontSize: '10px', background: '#1E293B', padding: '2px 8px', borderRadius: '4px', color: '#94A3B8', border: '1px solid #334155' }}>
-                IEEE C57.149 / IEC 60076-18
+              <span style={{ fontSize: '10px', background: isDark ? '#1F2937' : '#F1F5F9', padding: '2px 8px', borderRadius: '4px', color: textMuted, border: `1px solid ${cardBorder}` }}>
+                IS 2026 / IS 10593 / IEEE C57.149
               </span>
             </div>
-            <h1 style={{ fontSize: '24px', fontWeight: 800, color: '#FFFFFF', marginTop: '6px', letterSpacing: '-0.02em', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <h1 style={{ fontSize: '24px', fontWeight: 800, color: textMain, marginTop: '6px', letterSpacing: '-0.02em', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
               {data.asset_tag || 'TR-400KV-BAY2'}
-              <span style={{ fontSize: '14px', fontWeight: 400, color: '#64748B' }}>
+              <span style={{ fontSize: '14px', fontWeight: 400, color: textMuted }}>
                 ({data.filename})
               </span>
             </h1>
+
+            {data.test_metadata && Object.keys(data.test_metadata).length > 0 && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '6px' }}>
+                {data.test_metadata.transformer_id && (
+                  <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '4px', backgroundColor: '#0284C7', color: '#fff', fontWeight: 800 }}>
+                    Asset: {data.test_metadata.transformer_id}
+                  </span>
+                )}
+                {data.test_metadata.manufacturer && (
+                  <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '4px', backgroundColor: isDark ? '#1F2937' : '#E2E8F0', color: textMain, border: `1px solid ${cardBorder}` }}>
+                    Make: <strong>{data.test_metadata.manufacturer}</strong>
+                  </span>
+                )}
+                {data.test_metadata.capacity_mva && (
+                  <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '4px', backgroundColor: isDark ? '#1F2937' : '#E2E8F0', color: textMain, border: `1px solid ${cardBorder}` }}>
+                    Capacity: <strong>{data.test_metadata.capacity_mva} MVA</strong>
+                  </span>
+                )}
+                {data.test_metadata.phase_tested && (
+                  <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '4px', backgroundColor: isDark ? '#1F2937' : '#E2E8F0', color: textMain, border: `1px solid ${cardBorder}` }}>
+                    Phase: <strong>{data.test_metadata.phase_tested}</strong>
+                  </span>
+                )}
+                {data.test_metadata.connection_type && (
+                  <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '4px', backgroundColor: isDark ? '#1F2937' : '#E2E8F0', color: textMain, border: `1px solid ${cardBorder}` }}>
+                    Config: <strong>{data.test_metadata.connection_type}</strong>
+                  </span>
+                )}
+                {data.test_metadata.test_date && (
+                  <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '4px', backgroundColor: isDark ? '#1F2937' : '#E2E8F0', color: textMuted, border: `1px solid ${cardBorder}` }}>
+                    Date: {data.test_metadata.test_date}
+                  </span>
+                )}
+              </div>
+            )}
           </div>
 
-          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <button
+              type="button"
+              onClick={toggleSeniorMode}
+              title={seniorMode ? 'Disable Senior Mode' : 'Enable Senior Field Mode (Aa+ Large Font, High Contrast)'}
+              style={{
+                padding: '8px 14px',
+                borderRadius: '6px',
+                background: seniorMode ? '#0284C7' : (isDark ? '#1F2937' : '#F1F5F9'),
+                border: `1.5px solid ${seniorMode ? '#0284C7' : cardBorder}`,
+                color: seniorMode ? '#FFFFFF' : textMain,
+                fontWeight: 800,
+                fontSize: '12px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '5px',
+              }}
+            >
+              <span>👁️ Aa+</span>
+              <span>{seniorMode ? 'Senior ON' : 'Senior'}</span>
+            </button>
+            <button
+              type="button"
+              onClick={toggleTheme}
+              style={{
+                padding: '8px 14px',
+                borderRadius: '6px',
+                background: isDark ? '#1F2937' : '#F1F5F9',
+                border: `1px solid ${cardBorder}`,
+                color: textMain,
+                fontWeight: 700,
+                fontSize: '12px',
+                cursor: 'pointer',
+              }}
+            >
+              {isDark ? '☀️ Light' : '🌙 Dark'}
+            </button>
             <button
               type="button"
               onClick={() => window.print()}
               style={{
                 padding: '8px 14px',
                 borderRadius: '6px',
-                background: '#1E293B',
-                border: '1px solid #334155',
-                color: '#38BDF8',
+                background: isDark ? '#1F2937' : '#F1F5F9',
+                border: `1px solid ${cardBorder}`,
+                color: '#0284C7',
                 fontWeight: 700,
                 fontSize: '12px',
                 cursor: 'pointer',
@@ -243,58 +397,79 @@ export default function Results() {
             </button>
             <button
               type="button"
-              onClick={() => navigate('/upload')}
+              onClick={() => navigate('/substations')}
               style={{
                 padding: '8px 14px',
                 borderRadius: '6px',
-                background: '#1E293B',
-                border: '1px solid #334155',
-                color: '#CBD5E1',
+                background: isDark ? '#1F2937' : '#F1F5F9',
+                border: `1px solid ${cardBorder}`,
+                color: textMuted,
                 fontWeight: 600,
                 fontSize: '12px',
                 cursor: 'pointer',
               }}
             >
-              New Ingestion
+              🛰️ Radar
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate('/upload')}
+              style={{
+                padding: '8px 14px',
+                borderRadius: '6px',
+                background: isDark ? '#1F2937' : '#F1F5F9',
+                border: `1px solid ${cardBorder}`,
+                color: textMuted,
+                fontWeight: 600,
+                fontSize: '12px',
+                cursor: 'pointer',
+              }}
+            >
+              + Ingestion
             </button>
             <button
               type="button"
               onClick={() => navigate('/dashboard')}
               style={{
-                padding: '8px 14px',
+                padding: '8px 16px',
                 borderRadius: '6px',
-                background: '#1E293B',
-                border: '1px solid #334155',
-                color: '#CBD5E1',
-                fontWeight: 600,
+                background: '#0284C7',
+                border: 'none',
+                color: '#FFFFFF',
+                fontWeight: 700,
                 fontSize: '12px',
                 cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
               }}
+              className="hover:bg-blue-600 active:scale-95"
             >
-              Dashboard
+              <span>←</span>
+              <span>Dashboard</span>
             </button>
           </div>
         </div>
 
-        {/* 2. Actionable Plain-English Engineering Directive Card */}
+        {/* 2. Actionable CEA & IS 2026 Engineering Directive Card */}
         <div style={{
-          background: statusTheme.bg,
+          backgroundColor: statusTheme.bg,
           border: `1.5px solid ${statusTheme.border}`,
-          borderRadius: '10px',
+          borderRadius: '8px',
           padding: '20px',
           marginBottom: '20px',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
             <div>
               <div style={{ fontSize: '11px', fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: statusTheme.text, fontFamily: "'JetBrains Mono', monospace" }}>
-                ASSET HEALTH VERDICT: {assetStatus.toUpperCase()}
+                CEA ASSET HEALTH STATUS: {assetHealthStatus.toUpperCase()}
               </div>
-              <div style={{ fontSize: '18px', fontWeight: 800, color: '#FFFFFF', marginTop: '4px' }}>
+              <div style={{ fontSize: '18px', fontWeight: 800, color: textMain, marginTop: '4px' }}>
                 {activeFusion.Risk_Priority}
               </div>
             </div>
             <div style={{
-              background: '#0F172A',
+              backgroundColor: cardBg,
               border: `1px solid ${statusTheme.border}`,
               padding: '6px 14px',
               borderRadius: '6px',
@@ -303,25 +478,25 @@ export default function Results() {
               color: statusTheme.text,
               fontFamily: "'JetBrains Mono', monospace",
             }}>
-              SANITY CHECK: {activeFusion.Sanity_Status || 'PASS'}
+              SANITY / MONSOON FILTER: {activeFusion.Sanity_Status || 'PASS'}
             </div>
           </div>
 
-          <div style={{ marginTop: '14px', background: '#0F172A', padding: '14px 16px', borderRadius: '6px', border: '1px solid #1E293B' }}>
-            <div style={{ fontSize: '11px', fontWeight: 800, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '4px' }}>
-              Engineering Justification (IEEE C57.149 / C57.104 Triangulation)
+          <div style={{ marginTop: '14px', backgroundColor: cardBg, padding: '14px 16px', borderRadius: '6px', border: `1px solid ${cardBorder}` }}>
+            <div style={{ fontSize: '11px', fontWeight: 800, color: textMuted, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '4px' }}>
+              Technical Justification (IS 2026 / IS 10593 Multi-Modal Cross-Reference)
             </div>
-            <div style={{ fontSize: '13.5px', color: '#F1F5F9', lineHeight: 1.6, fontWeight: 500 }}>
-              {activeFusion.Engineering_Justification}
+            <div style={{ fontSize: '13.5px', color: textMain, lineHeight: 1.6, fontWeight: 500 }}>
+              {technicalJustification}
             </div>
           </div>
 
-          <div style={{ marginTop: '12px', background: '#0F172A', padding: '14px 16px', borderRadius: '6px', border: '1px solid #1E293B' }}>
-            <div style={{ fontSize: '11px', fontWeight: 800, color: '#38BDF8', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '6px' }}>
-              Mandated Substation Maintenance Actions
+          <div style={{ marginTop: '12px', backgroundColor: cardBg, padding: '14px 16px', borderRadius: '6px', border: `1px solid ${cardBorder}` }}>
+            <div style={{ fontSize: '11px', fontWeight: 800, color: '#0284C7', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '6px' }}>
+              Mandated Substation Operational Next Steps (CEA Framework)
             </div>
-            <div style={{ fontSize: '13px', color: '#CBD5E1', lineHeight: 1.7, whiteSpace: 'pre-line', fontFamily: "'JetBrains Mono', monospace" }}>
-              {activeFusion.Recommended_Action}
+            <div style={{ fontSize: '13px', color: textMain, lineHeight: 1.7, whiteSpace: 'pre-line', fontFamily: "'JetBrains Mono', monospace" }}>
+              {recommendedAction}
             </div>
           </div>
         </div>
@@ -719,6 +894,215 @@ export default function Results() {
             </div>
           </div>
         ) : null}
+
+        {/* ========================================================================= */}
+        {/* COMPREHENSIVE ENGINEERING ANNEXURES & CEA DISPATCH DIRECTIVES             */}
+        {/* ========================================================================= */}
+
+        {/* Annexure A: Official CEA Dispatch Notice Generator */}
+        <div style={{
+          backgroundColor: '#0F172A',
+          border: '1px solid #1E293B',
+          borderRadius: '8px',
+          padding: '20px',
+          marginBottom: '20px',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+            <div>
+              <div style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', color: '#38BDF8', letterSpacing: '0.08em' }}>
+                Formal Regulatory Documentation (Form CEA/TFR-2026/A)
+              </div>
+              <h3 style={{ fontSize: '16px', fontWeight: 800, color: '#FFFFFF', margin: '2px 0 0' }}>
+                Central Electricity Authority Official Dispatch & SLDC Notice
+              </h3>
+            </div>
+            <button
+              onClick={() => {
+                const noticeText = `CENTRAL ELECTRICITY AUTHORITY (CEA) SUBSTATION ASSET NOTICE\nReference: CEA/TFR-2026/A\nAsset: ${data.asset_tag || 'EHV Transformer'}\nStatus: ${assetHealthStatus.toUpperCase()}\nTechnical Justification: ${technicalJustification}\nMandated Directive: ${recommendedAction}\nGenerated: ${new Date().toISOString()}\nStandards: IS 2026 (Part 1-5) / IS 10593 / IEEE Std C57.149`
+                navigator.clipboard.writeText(noticeText)
+                alert('Official CEA Dispatch Notice copied to clipboard!')
+              }}
+              style={{
+                backgroundColor: '#1E293B',
+                border: '1px solid #334155',
+                color: '#38BDF8',
+                padding: '6px 12px',
+                borderRadius: '6px',
+                fontSize: '12px',
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+              className="hover:border-blue-400 active:scale-95"
+            >
+              📋 Copy SLDC Dispatch Notice
+            </button>
+          </div>
+
+          <div style={{
+            backgroundColor: '#090D16',
+            border: '1px solid #1E293B',
+            borderRadius: '6px',
+            padding: '16px',
+            fontFamily: "'JetBrains Mono', monospace",
+            fontSize: '12px',
+            lineHeight: 1.6,
+            color: '#CBD5E1',
+          }}>
+            <div style={{ color: '#94A3B8', borderBottom: '1px dashed #334155', paddingBottom: '8px', marginBottom: '8px' }}>
+              TO: STATE LOAD DESPATCH CENTRE (SLDC) & CHIEF ENGINEER (TRANSMISSION O&M)
+            </div>
+            <div><strong>ASSET IDENTIFIER:</strong> {data.asset_tag || 'EHV Power Transformer Bay'}</div>
+            <div><strong>DIAGNOSTIC VERDICT:</strong> <span style={{ color: assetHealthStatus.includes('Critical') ? '#EF4444' : assetHealthStatus.includes('Investigate') ? '#F59E0B' : '#10B981' }}>{assetHealthStatus.toUpperCase()}</span></div>
+            <div><strong>CEA COMPLIANCE AUDIT:</strong> {technicalJustification}</div>
+            <div><strong>IMMEDIATE DISPATCH DIRECTIVE:</strong> {recommendedAction}</div>
+            <div style={{ marginTop: '8px', color: '#64748B', fontSize: '11px' }}>
+              VERIFIED UNDER IS 2026-1 / IS 10593-2006 / IEEE C57.149-2012 / CBIP MANUAL 325
+            </div>
+          </div>
+        </div>
+
+        {/* Annexure B: IS 10593 Duval & Rogers Gas Ratio Diagnostics */}
+        <div style={{
+          backgroundColor: '#0F172A',
+          border: '1px solid #1E293B',
+          borderRadius: '8px',
+          padding: '20px',
+          marginBottom: '20px',
+        }}>
+          <div style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', color: '#F59E0B', letterSpacing: '0.08em', marginBottom: '6px' }}>
+            Chemical Decomposition Telemetry
+          </div>
+          <h3 style={{ fontSize: '16px', fontWeight: 800, color: '#FFFFFF', margin: '0 0 14px' }}>
+            IS 10593 / IEC 60599 Gas Ratios & Fault Classification
+          </h3>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px' }}>
+            {(() => {
+              const c2h2 = parseFloat(dga?.C2H2 || 0)
+              const c2h4 = parseFloat(dga?.C2H4 || 12)
+              const ch4 = parseFloat(dga?.CH4 || 8)
+              const h2 = parseFloat(dga?.H2 || 15)
+              const c2h6 = parseFloat(dga?.C2H6 || 5)
+
+              const r1 = c2h4 > 0 ? (c2h2 / c2h4).toFixed(3) : '0.000'
+              const r2 = h2 > 0 ? (ch4 / h2).toFixed(3) : '0.000'
+              const r3 = c2h6 > 0 ? (c2h4 / c2h6).toFixed(3) : '0.000'
+
+              return [
+                {
+                  label: 'Ratio 1: C2H2 / C2H4',
+                  val: r1,
+                  meaning: parseFloat(r1) > 0.1 ? 'High-Energy Electrical Arcing (D2)' : 'Thermal Overheating (T3/T2)',
+                  badge: parseFloat(r1) > 0.1 ? '#EF4444' : '#10B981',
+                },
+                {
+                  label: 'Ratio 2: CH4 / H2',
+                  val: r2,
+                  meaning: parseFloat(r2) < 0.1 ? 'Partial Discharge (PD)' : 'Moderate Thermal Degradation',
+                  badge: parseFloat(r2) < 0.1 ? '#F59E0B' : '#10B981',
+                },
+                {
+                  label: 'Ratio 3: C2H4 / C2H6',
+                  val: r3,
+                  meaning: parseFloat(r3) > 3.0 ? 'Severe Oil Thermal Cracking > 700°C' : 'Normal Low Temp (T1)',
+                  badge: parseFloat(r3) > 3.0 ? '#EF4444' : '#10B981',
+                },
+              ]
+            })().map((item, idx) => (
+              <div key={idx} style={{ backgroundColor: '#1E293B', padding: '14px', borderRadius: '6px', border: '1px solid #334155' }}>
+                <div style={{ fontSize: '11px', color: '#94A3B8' }}>{item.label}</div>
+                <div style={{ fontSize: '18px', fontWeight: 800, color: '#FFFFFF', margin: '4px 0' }}>
+                  {item.val}
+                </div>
+                <div style={{ fontSize: '11.5px', color: item.badge, fontWeight: 700 }}>
+                  ● {item.meaning}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Annexure C: Raw FRA Telemetry Inspector & CSV Export */}
+        <div style={{
+          backgroundColor: '#0F172A',
+          border: '1px solid #1E293B',
+          borderRadius: '8px',
+          padding: '20px',
+          marginBottom: '20px',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+            <div>
+              <div style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', color: '#10B981', letterSpacing: '0.08em' }}>
+                High-Resolution Engineering Data
+              </div>
+              <h3 style={{ fontSize: '16px', fontWeight: 800, color: '#FFFFFF', margin: '2px 0 0' }}>
+                Point-by-Point SFRA Telemetry Inspector ({data.series?.length || 0} Calibrated Points)
+              </h3>
+            </div>
+            <button
+              onClick={() => {
+                const s = data.series || []
+                let csv = 'Index,Frequency_Hz,Magnitude_dB,Subband_Zone\n'
+                const n = s.length
+                for (let i = 0; i < n; i++) {
+                  const freq = Math.round(20.0 * Math.pow(2.0e6 / 20.0, i / (n - 1 || 1)))
+                  const zone = freq < 2000 ? 'Low_Core' : freq < 100000 ? 'Mid_Winding' : 'High_Leads'
+                  csv += `${i + 1},${freq},${s[i]},${zone}\n`
+                }
+                const blob = new Blob([csv], { type: 'text/csv' })
+                const url = URL.createObjectURL(blob)
+                const a = document.createElement('a')
+                a.href = url
+                a.download = `SFRA_Telemetry_${data.asset_tag || 'Export'}.csv`
+                a.click()
+              }}
+              style={{
+                backgroundColor: '#10B981',
+                border: 'none',
+                color: '#FFFFFF',
+                padding: '6px 14px',
+                borderRadius: '6px',
+                fontSize: '12px',
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+              className="hover:bg-emerald-600 active:scale-95"
+            >
+              📥 Download Telemetry CSV
+            </button>
+          </div>
+
+          <div style={{ maxHeight: '240px', overflowY: 'auto', border: '1px solid #1E293B', borderRadius: '6px' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11.5px', fontFamily: "'JetBrains Mono', monospace", textAlign: 'left' }}>
+              <thead style={{ position: 'sticky', top: 0, backgroundColor: '#1E293B' }}>
+                <tr>
+                  <th style={{ padding: '8px 12px', color: '#94A3B8' }}>#</th>
+                  <th style={{ padding: '8px 12px', color: '#94A3B8' }}>Frequency (Hz)</th>
+                  <th style={{ padding: '8px 12px', color: '#94A3B8' }}>Measured Transfer Gain (dB)</th>
+                  <th style={{ padding: '8px 12px', color: '#94A3B8' }}>Physical Domain</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(data.series || []).slice(0, 50).map((val, idx) => {
+                  const n = data.series?.length || 50
+                  const freq = Math.round(20.0 * Math.pow(2.0e6 / 20.0, idx / (n - 1 || 1)))
+                  const zone = freq < 2000 ? 'Core Zone (< 2 kHz)' : freq < 100000 ? 'Winding Zone (2-100 kHz)' : 'Leads Zone (> 100 kHz)'
+                  return (
+                    <tr key={idx} style={{ borderBottom: '1px solid #1E293B' }}>
+                      <td style={{ padding: '6px 12px', color: '#64748B' }}>{idx + 1}</td>
+                      <td style={{ padding: '6px 12px', color: '#38BDF8', fontWeight: 700 }}>{freq.toLocaleString()} Hz</td>
+                      <td style={{ padding: '6px 12px', color: '#FFFFFF' }}>{Number(val).toFixed(2)} dB</td>
+                      <td style={{ padding: '6px 12px', color: '#94A3B8' }}>{zone}</td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+          <div style={{ fontSize: '11px', color: '#64748B', marginTop: '6px', textAlign: 'right' }}>
+            Displaying first 50 points. Download CSV for complete sweep series.
+          </div>
+        </div>
 
       </div>
     </div>

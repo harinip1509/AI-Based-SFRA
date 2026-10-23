@@ -11,14 +11,15 @@ router = APIRouter(tags=["auth"])
 
 @router.post("/register", response_model=UserPublic, status_code=status.HTTP_201_CREATED)
 def register(payload: RegisterRequest, db: Session = Depends(get_db)):
-    existing = db.query(User).filter(User.email == payload.email).first()
+    clean_email = payload.email.lower().strip()
+    existing = db.query(User).filter(User.email == clean_email).first()
     if existing:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="User already exists")
 
     user = User(
         name=payload.name.strip(),
-        email=payload.email.lower().strip(),
-        password=hash_password(payload.password),
+        email=clean_email,
+        password=hash_password(payload.password, validate=True),
     )
     db.add(user)
     db.commit()
