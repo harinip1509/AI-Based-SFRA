@@ -52,3 +52,9 @@ Thumbs.db
 .coverage
 htmlcov/
 *.pth.bak
+
+# Local Office / Paper / Presentation documents
+*.docx
+*.pptx
+*.pdf
+
